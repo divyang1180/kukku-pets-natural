@@ -1,0 +1,478 @@
+@import "tailwindcss";
+
+/* =========================================================
+   TAILWIND v4 THEME
+   - Colors    → generates bg-*, text-*, border-*, ring-* etc.
+   - Fonts     → --font-* generates font-* utilities directly
+   - Shadows   → --shadow-* generates shadow-* utilities
+   - Animations→ --animate-* generates animate-* utilities
+   ========================================================= */
+@theme {
+
+  /* ── Brand Colors ── */
+  --color-primary:         #2ECC71;
+  --color-primary-light:   #a7f3d0;
+  --color-primary-dark:    #27ae60;
+  --color-secondary:       #00B8D9;
+  --color-secondary-light: #b2f5ea;
+  --color-accent:          #FFD166;
+  --color-accent-dark:     #f0b429;
+  --color-dark:            #1D3557;
+  --color-dark-soft:       #2a4a7f;
+  --color-background:      #F8FFFA;
+  --color-surface:         #FFFFFF;
+  --color-danger:          #e53e3e;
+  --color-success:         #38a169;
+
+  /* ── Fonts (--font-* → font-* utility classes in Tailwind v4) ── */
+  --font-heading: "Poppins", sans-serif;
+  --font-body:    "Inter",   sans-serif;
+  --font-accent:  "Manrope", sans-serif;
+
+  /* ── Box Shadows (--shadow-* → shadow-* utility classes) ── */
+  --shadow-glass:         0 8px 32px rgba(31, 38, 135, 0.08);
+  --shadow-card:          0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover:    0 12px 40px rgba(0, 0, 0, 0.12);
+  --shadow-glow-primary:  0 0 30px rgba(46, 204, 113, 0.35);
+  --shadow-glow-secondary:0 0 30px rgba(0, 184, 217, 0.35);
+  --shadow-glow-accent:   0 0 30px rgba(255, 209, 102, 0.45);
+
+  /* ── Keyframe Animations (--animate-* → animate-* utility classes) ── */
+  --animate-float:         float 6s ease-in-out infinite;
+  --animate-float-slow:    float-slow 8s ease-in-out infinite;
+  --animate-float-reverse: float-reverse 7s ease-in-out infinite;
+  --animate-pulse-glow:    pulse-glow 2s ease-in-out infinite;
+  --animate-spin-slow:     spin 12s linear infinite;
+  --animate-bounce-soft:   bounce-soft 2s ease-in-out infinite;
+  --animate-shimmer:       shimmer 2.5s linear infinite;
+  --animate-leaf-fall:     leaf-fall 10s linear infinite;
+  --animate-bubble-rise:   bubble-rise 8s linear infinite;
+  --animate-slide-up:      slide-up 0.6s ease-out;
+  --animate-fade-in:       fade-in 0.6s ease-out;
+  --animate-scale-in:      scale-in 0.5s ease-out;
+  --animate-wiggle:        wiggle 1s ease-in-out infinite;
+  --animate-ripple:        ripple 0.6s ease-out forwards;
+}
+
+/* =========================================================
+   SITE CONTAINER — Custom class to avoid Tailwind v4 conflict.
+   ========================================================= */
+.site-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+}
+@media (min-width: 640px) {
+  .site-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+@media (min-width: 1024px) {
+  .site-container {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+@media (min-width: 1280px) {
+  .site-container {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* =========================================================
+   KEYFRAMES
+   ========================================================= */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-20px); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-15px) rotate(3deg); }
+}
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(-15px); }
+  50%       { transform: translateY(0px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(46, 204, 113, 0.2); }
+  50%       { box-shadow: 0 0 40px rgba(46, 204, 113, 0.5); }
+}
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes leaf-fall {
+  0%   { transform: translateY(-10vh) rotate(0deg) translateX(0);       opacity: 0; }
+  10%  { opacity: 0.8; }
+  90%  { opacity: 0.8; }
+  100% { transform: translateY(110vh) rotate(720deg) translateX(100px);  opacity: 0; }
+}
+@keyframes bubble-rise {
+  0%   { transform: translateY(100%) scale(0);    opacity: 0; }
+  15%  { opacity: 0.6; transform: translateY(85%) scale(1); }
+  100% { transform: translateY(-100vh) scale(0.4); opacity: 0; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50%       { transform: rotate(3deg); }
+}
+@keyframes ripple {
+  0%   { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes progress-fill {
+  from { width: 0%; }
+  to   { width: var(--target-width); }
+}
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50%       { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+/* =========================================================
+   BASE RESET
+   ========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body, "Inter", sans-serif);
+  color: var(--color-dark, #1D3557);
+  background-color: var(--color-background, #F8FFFA);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Hide default cursor when custom cursor is active */
+.custom-cursor-active * {
+  cursor: none !important;
+}
+
+/* =========================================================
+   GLASSMORPHISM
+   ========================================================= */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.glass-dark {
+  background: rgba(29, 53, 87, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================================
+   GRADIENT UTILITIES
+   ========================================================= */
+.gradient-primary {
+  background: linear-gradient(135deg, #2ECC71, #00B8D9);
+}
+.gradient-hero {
+  background: linear-gradient(135deg, #e8fdf5 0%, #d4f7ec 30%, #e0f7fa 65%, #f0fdf4 100%);
+}
+.gradient-dark {
+  background: linear-gradient(135deg, #1D3557, #2a4a7f);
+}
+.gradient-accent {
+  background: linear-gradient(135deg, #FFD166, #f0b429);
+}
+.gradient-text {
+  background: linear-gradient(135deg, #2ECC71, #00B8D9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+::selection {
+  background: rgba(46, 204, 113, 0.2);
+  color: #1D3557;
+}
+
+/* =========================================================
+   CUSTOM SCROLLBAR
+   ========================================================= */
+::-webkit-scrollbar       { width: 8px; }
+::-webkit-scrollbar-track { background: #f0fdf4; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #2ECC71, #00B8D9);
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #27ae60, #0891b2);
+}
+
+/* =========================================================
+   3D FLIP CARD
+   ========================================================= */
+.flip-card { perspective: 1000px; }
+.flip-card-inner {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+.flip-card-front,
+.flip-card-back  {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-card-back { transform: rotateY(180deg); }
+
+/* =========================================================
+   MARQUEE
+   ========================================================= */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+.progress-bar-fill { animation: progress-fill 1.5s ease-out forwards; }
+
+/* =========================================================
+   CONTACT SECTION
+   ========================================================= */
+.contact-header {
+  max-width: 48rem;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.contact-form-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid rgba(209, 213, 219, 0.65);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-card);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.contact-form-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-dark);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.contact-form-heading svg {
+  color: var(--color-primary);
+  flex: 0 0 auto;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-field-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.contact-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.contact-label {
+  color: #64748b;
+  font-family: var(--font-accent);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.contact-input,
+.contact-textarea {
+  width: 100%;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  border-radius: 0.875rem;
+  background: var(--color-background);
+  color: var(--color-dark);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  outline: none;
+  padding: 0.875rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.contact-input {
+  min-height: 3rem;
+}
+
+.contact-textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.contact-input:focus,
+.contact-textarea:focus {
+  border-color: var(--color-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.18);
+}
+
+.contact-submit {
+  width: 100%;
+  min-height: 3rem;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+}
+
+.contact-info-panel,
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-info-panel {
+  gap: 1.5rem;
+}
+
+.contact-info-list {
+  gap: 1rem;
+}
+
+.contact-info-card {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 1.25rem;
+  min-height: 5rem;
+  border: 1px solid rgba(209, 213, 219, 0.65);
+  border-radius: 1rem;
+  background: #ffffff;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.contact-info-card:hover {
+  border-color: rgba(46, 204, 113, 0.35);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px);
+}
+
+.contact-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: 0 0 3.5rem;
+  border-radius: 1rem;
+  background: rgba(46, 204, 113, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.contact-info-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #94a3b8;
+  font-family: var(--font-accent);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.contact-info-value {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--color-dark);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.contact-map-frame {
+  position: relative;
+  height: 18.75rem;
+  overflow: hidden;
+  border: 1px solid rgba(209, 213, 219, 0.65);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+@media (min-width: 640px) {
+  .contact-field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .contact-header {
+    margin-bottom: 3rem;
+  }
+
+  .contact-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+    gap: 3.5rem;
+  }
+}
