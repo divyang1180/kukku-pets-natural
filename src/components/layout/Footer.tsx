@@ -41,7 +41,9 @@ export default function Footer() {
       <div className="footer-inner">
         <div className="footer-top">
           <div className="footer-brand">
-            <div className="logo-text">Kukku Pets Natural<span>Pure · Herbal · India</span></div>
+            <a href="#" className="footer-logo">
+              <img src="/images/logo.png" alt="Kukku Pet Naturals" className="logo-img" />
+            </a>
             <p>India&apos;s first herbal dental water additive for dogs. Effortless daily oral hygiene for a lifetime of happy, healthy smiles. Made in Gujarat, India.</p>
             <div className="social-links" style={{ marginTop: "1rem" }}>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">

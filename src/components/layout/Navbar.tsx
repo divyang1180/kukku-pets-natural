@@ -18,22 +18,12 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ANNOUNCEMENT BAR */}
-      <div className="top-bar">
-        🎉 India&apos;s First Herbal Dental Water Additive — <strong>Free Shipping Across India</strong> &nbsp;|&nbsp;{" "}
-        <a href="https://wa.me/918160526176" target="_blank" rel="noopener noreferrer">
-          WhatsApp us
-        </a>
-      </div>
 
       {/* NAV */}
       <nav>
         <div className="nav-inner">
           <a href="#" className="logo">
-            <div className="logo-icon">🐾</div>
-            <div className="logo-text">
-              Kukku Pets Natural<span>Pure · Herbal · India</span>
-            </div>
+            <img src="/images/logo.png" alt="Kukku Pet Naturals" className="logo-img" />
           </a>
           
           {/* Desktop Nav Links */}

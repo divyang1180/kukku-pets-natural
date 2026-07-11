@@ -17,8 +17,8 @@
   --green-light: #E8F5EC;
   --green-mid: #4CAF65;
   --mint: #A8DFBA;
-  --cream: #FAFAF7;
-  --warm: #F5F0E8;
+  --cream: #FFFFFF;
+  --warm: #ffffff;
   --text: #1A1A1A;
   --text-soft: #555;
   --text-muted: #888;
@@ -83,6 +83,21 @@ nav {
   align-items: center;
   gap: 10px;
   text-decoration: none;
+}
+.logo-img {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.footer-logo {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+}
+.footer-logo .logo-img {
+  height: 52px;
+  filter: brightness(0) invert(1);
 }
 .logo-icon {
   width: 40px;
@@ -149,7 +164,7 @@ nav {
 
 /* ── HERO ── */
 .hero {
-  background: linear-gradient(160deg,#f0faf3 0%,#e8f7ec 40%,#fafaf7 100%);
+  background: #ffffff;
   padding: 5rem 1.5rem 4rem;
   text-align: center;
   position: relative;
@@ -421,7 +436,7 @@ section {
 
 /* ── PRODUCT FEATURE ── */
 .product-section {
-  background: var(--green-light);
+  background: #ffffff;
 }
 .product-inner {
   display: grid;
