@@ -7,27 +7,27 @@
   --color-dark: var(--text);
   --color-background: var(--cream);
   --color-surface: var(--white);
-  --shadow-glow-primary: 0 0 20px rgba(44, 122, 60, 0.4);
+  --shadow-glow-primary: 0 0 20px rgba(1, 50, 32, 0.3);
 }
 
-/* ── STYLE SETTINGS FROM kukkupets_website.html ── */
+/* ── STYLE SETTINGS IN NUTRIPAW Forest Green / Warm Cream STYLE ── */
 :root {
-  --green: #2C7A3C;
-  --green-dark: #1A5228;
-  --green-light: #E8F5EC;
-  --green-mid: #4CAF65;
-  --mint: #A8DFBA;
-  --cream: #FFFFFF;
-  --warm: #ffffff;
-  --text: #1A1A1A;
-  --text-soft: #555;
-  --text-muted: #888;
-  --gold: #D4A832;
+  --green: #013220;
+  --green-dark: #001f14;
+  --green-light: #f0f5f1;
+  --green-mid: #0b4f35;
+  --mint: #86b09c;
+  --cream: #fdfbf7;
+  --warm: #f6f4ee;
+  --text: #111e17;
+  --text-soft: #3a4740;
+  --text-muted: #6e7d75;
+  --gold: #f5a623;
   --white: #FFFFFF;
-  --radius: 14px;
-  --radius-sm: 8px;
-  --shadow: 0 4px 24px rgba(44, 122, 60, 0.10);
-  --shadow-lg: 0 8px 48px rgba(44, 122, 60, 0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 6px 20px rgba(1, 50, 32, 0.05);
+  --shadow-lg: 0 10px 40px rgba(1, 50, 32, 0.09);
 }
 
 html {
@@ -1032,6 +1032,16 @@ footer {
 .fade-up.d2{animation-delay:.2s}
 .fade-up.d3{animation-delay:.3s}
 .fade-up.d4{animation-delay:.4s}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
 
 /* ── SITE CONTAINER ── */
 .site-container {

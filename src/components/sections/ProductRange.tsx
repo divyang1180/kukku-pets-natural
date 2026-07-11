@@ -1,241 +1,289 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { Star, ShieldCheck, Heart, Sparkles, MessageSquare, Plus, Check } from "lucide-react";
 import SectionReveal from "../ui/SectionReveal";
-import {
-  Bone,
-  Cross,
-  HeartPulse,
-  Home,
-  Leaf,
-  MapPin,
-  ShieldCheck,
-  ShoppingBag,
-  ShowerHead,
-  SprayCan,
-  Syringe,
-  ToyBrick,
-  Utensils,
-} from "lucide-react";
 
-const products = [
-  {
-    title: "Premium Pet Food",
-    category: "Nutrition",
-    desc: "Balanced everyday meals made for healthy energy, coat support, and happy appetites.",
-    icon: <Bone className="h-5 w-5" />,
-  },
-  {
-    title: "Tooth Wipes",
-    category: "Oral Care",
-    desc: "Quick-use dental wipes for cleaner teeth and fresher breath between deep cleanings.",
-    icon: <ShieldCheck className="h-5 w-5" />,
-  },
-  {
-    title: "Tick & Flea Herbal Spray",
-    category: "Skin & Coat",
-    desc: "A plant-forward spray designed for routine coat protection and outdoor comfort.",
-    icon: <SprayCan className="h-5 w-5" />,
-  },
-  {
-    title: "Shampoo",
-    category: "Grooming",
-    desc: "Gentle cleansing care for a fresh coat without a harsh, stripped feel.",
-    icon: <ShowerHead className="h-5 w-5" />,
-  },
-  {
-    title: "Pet GPS",
-    category: "Smart Safety",
-    desc: "Track walks, outdoor time, and location updates with a pet-friendly GPS accessory.",
-    icon: <MapPin className="h-5 w-5" />,
-  },
-  {
-    title: "Premium Home Goods for Pets",
-    category: "Home",
-    desc: "Comfortable, durable essentials that make daily living easier for pets and families.",
-    icon: <Home className="h-5 w-5" />,
-  },
-  {
-    title: "Poop Bags",
-    category: "Walk Essentials",
-    desc: "Easy-carry clean-up bags for everyday walks, travel, and responsible pet parenting.",
-    icon: <ShoppingBag className="h-5 w-5" />,
-  },
-  {
-    title: "Hemp Collar",
-    category: "Eco Accessories",
-    desc: "A soft, natural-fiber collar option designed for comfortable daily wear.",
-    icon: <Leaf className="h-5 w-5" />,
-  },
-  {
-    title: "Jute Toys",
-    category: "Eco Play",
-    desc: "Textured, natural-fiber play pieces for tugging, chewing, and enrichment time.",
-    icon: <ToyBrick className="h-5 w-5" />,
-  },
-  {
-    title: "Bamboo Bowls",
-    category: "Feeding",
-    desc: "Lightweight, practical bowls with a warmer natural look for feeding corners.",
-    icon: <Utensils className="h-5 w-5" />,
-  },
-  {
-    title: "Deworming Paste",
-    category: "Health Care",
-    desc: "Easy-dose parasite care support to use as directed by a veterinary professional.",
-    icon: <Syringe className="h-5 w-5" />,
-  },
-  {
-    title: "Allergy Kit",
-    category: "Wellness Kit",
-    desc: "A care kit for spotting sensitivities early and supporting calm skin routines.",
-    icon: <HeartPulse className="h-5 w-5" />,
-  },
-  {
-    title: "Parvo Kit",
-    category: "Emergency Care",
-    desc: "Supportive response essentials for urgent symptoms while arranging veterinary care.",
-    icon: <Cross className="h-5 w-5" />,
-  },
-];
-
-const categoryHighlights = [
-  "Natural care essentials",
-  "Eco-friendly accessories",
-  "Smart safety and wellness",
-];
-
-const rangeStats = [
-  {
-    value: "13",
-    label: "Care products",
-    icon: <ShoppingBag className="h-5 w-5" />,
-  },
-  {
-    value: "7+",
-    label: "Pet care zones",
-    icon: <ShieldCheck className="h-5 w-5" />,
-  },
-  {
-    value: "Eco",
-    label: "Natural choices",
-    icon: <Leaf className="h-5 w-5" />,
-  },
-];
+interface Product {
+  id: string;
+  title: string;
+  category: string;
+  tags: string[];
+  desc: string;
+  subPrice: number;
+  oneTimePrice: number;
+  image: string;
+  reviews: string;
+  ratingCount: number;
+  benefits: string[];
+}
 
 export default function ProductRange() {
+  const [purchaseModes, setPurchaseModes] = useState<Record<string, "subscribe" | "onetime">>({
+    "dental-additive": "subscribe",
+    "dental-wipes": "subscribe",
+  });
+
+  const products: Product[] = [
+    {
+      id: "dental-additive",
+      title: "Natural Dental Water Additive (250ml)",
+      category: "Oral Care",
+      tags: ["Bad Breath", "Plaque & Tartar", "Gum Health"],
+      desc: "India's first herbal water additive. Tasteless, odorless, and completely brush-free dental care.",
+      subPrice: 599,
+      oneTimePrice: 749,
+      image: "/images/product-bottle.png",
+      reviews: "4,950+ reviews",
+      ratingCount: 5,
+      benefits: ["Freshens breath in 14 days", "Reduces plaque consolidation", "Zero-brushing stress formula"],
+    },
+    {
+      id: "dental-wipes",
+      title: "Herbal Dental Tooth Wipes (50 Wipes)",
+      category: "Oral Care",
+      tags: ["Plaque Removal", "Easy Cleaning", "Mint Fresh"],
+      desc: "Soft textured finger wipes pre-soaked with mint & aloe to physically clear tartar buildup.",
+      subPrice: 399,
+      oneTimePrice: 499,
+      image: "/images/testimonial-dogs.png",
+      reviews: "1,220+ reviews",
+      ratingCount: 5,
+      benefits: ["Wipes away soft plaque instantly", "Soothing chamomile & mint", "Convenient travel-ready tub"],
+    },
+  ];
+
+  const handleToggleMode = (productId: string, mode: "subscribe" | "onetime") => {
+    setPurchaseModes((prev) => ({
+      ...prev,
+      [productId]: mode,
+    }));
+  };
+
+  const getWhatsAppLink = (product: Product, mode: "subscribe" | "onetime") => {
+    const price = mode === "subscribe" ? product.subPrice : product.oneTimePrice;
+    const text = encodeURIComponent(
+      `Hi! I would like to order the "${product.title}" (${
+        mode === "subscribe" ? "Subscribe & Save 20%" : "One-time purchase"
+      }) for ₹${price}. Please let me know how to proceed!`
+    );
+    return `https://wa.me/918160526176?text=${text}`;
+  };
+
   return (
-    <section
-      className="relative overflow-hidden scroll-mt-24 bg-[linear-gradient(135deg,#f8fffa_0%,#ffffff_46%,#eafcff_100%)] py-16 md:py-20 lg:py-24"
-      id="product-range"
-    >
-      <div className="absolute inset-x-0 top-0 h-24 border-y border-primary/10 bg-white/55 pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-r from-primary/5 via-transparent to-secondary/10 pointer-events-none" />
+    <section className="bg-white py-16 md:py-24 scroll-mt-20" id="product-range">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Section Header */}
+        <SectionReveal className="text-center max-w-3xl mx-auto mb-16">
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#f0f5f1] text-[#013220] rounded-full text-xs font-accent font-extrabold uppercase tracking-widest mb-4 border border-[#86b09c]/25">
+            🛒 Best Sellers
+          </span>
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#111e17] leading-tight mb-4">
+            Shop Our Best Sellers
+          </h2>
+          <p className="font-body text-base md:text-lg text-[#3a4740] leading-relaxed">
+            Tried, trusted, and loved. These are the natural supplements and formulas that pet parents keep coming back for.
+          </p>
+        </SectionReveal>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-10 xl:px-12">
-        <div className="mb-9 grid grid-cols-1 gap-7 lg:grid-cols-[minmax(0,0.9fr)_minmax(28rem,0.95fr)] lg:items-end">
-          <SectionReveal direction="right">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-accent font-extrabold uppercase tracking-widest mb-4">
-              Product Range
-            </span>
-            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-extrabold text-dark leading-tight mb-4">
-              More Everyday Care for Pets
-            </h2>
-            <p className="font-body text-gray-600 text-base md:text-lg leading-relaxed max-w-2xl">
-              A wider Kukku Pets Natural lineup covering food, grooming, eco accessories, home essentials, safety, and wellness support.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              {categoryHighlights.map((item) => (
-                <span
-                  key={item}
-                  className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white px-4 py-2 shadow-sm"
-                >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Leaf className="h-4 w-4" />
-                  </span>
-                  <span className="font-accent text-xs font-extrabold text-dark sm:text-sm">
-                    {item}
-                  </span>
-                </span>
-              ))}
-            </div>
-          </SectionReveal>
-
-          <SectionReveal direction="left" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {rangeStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-2xl border border-white/80 bg-white/85 p-4 shadow-card backdrop-blur-sm"
-              >
-                <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/10 text-secondary">
-                  {stat.icon}
-                </span>
-                <span className="block font-heading text-2xl font-extrabold leading-none text-dark">
-                  {stat.value}
-                </span>
-                <span className="mt-1 block font-accent text-[0.68rem] font-extrabold uppercase tracking-widest text-gray-400">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </SectionReveal>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 lg:gap-5">
-          {products.map((product, i) => {
-            const isFeatured = i === 0;
-            const isClosingCard = i === products.length - 1;
-            const isWideCard = isFeatured || isClosingCard;
+        {/* Product Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+          {products.map((product, idx) => {
+            const currentMode = purchaseModes[product.id] || "subscribe";
+            const currentPrice = currentMode === "subscribe" ? product.subPrice : product.oneTimePrice;
+            const originalPrice = product.oneTimePrice;
+            const discount = Math.round(((originalPrice - product.subPrice) / originalPrice) * 100);
 
             return (
               <SectionReveal
-                key={product.title}
+                key={product.id}
                 direction="up"
-                delay={i * 0.03}
-                className={`group relative h-full overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-card-hover ${
-                  isFeatured ? "sm:col-span-2 lg:col-span-2" : ""
-                } ${isClosingCard ? "lg:col-span-2 2xl:col-span-3" : ""}`}
+                delay={idx * 0.05}
+                className="bg-[#fdfbf7] border border-gray-200/50 rounded-3xl p-6 flex flex-col justify-between shadow-md hover:shadow-xl transition-all duration-300 relative group"
               >
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                {/* Sale Badge */}
+                {currentMode === "subscribe" && (
+                  <span className="absolute top-4 left-4 z-10 bg-[#0b4f35] text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm">
+                    Save {discount}% + Free Gift 🎁
+                  </span>
+                )}
 
-                <div className={isWideCard ? "md:flex md:items-center md:gap-7" : ""}>
-                  <div
-                    className={`flex items-center justify-between gap-4 ${
-                      isWideCard ? "mb-5 md:mb-0 md:min-w-[15rem]" : "mb-5"
-                    }`}
-                  >
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-                        {product.icon}
-                      </span>
-                    <span className="rounded-full bg-secondary/10 px-3 py-1 font-accent text-[0.65rem] font-extrabold uppercase tracking-widest text-secondary">
-                        {product.category}
-                      </span>
+                {/* Top Section: Tags and Rating */}
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-[11px] font-extrabold text-[#6e7d75] uppercase tracking-wider">
+                      {product.category}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={13} className="fill-[#f5a623] text-[#f5a623]" />
+                        ))}
+                      </div>
+                      <span className="text-xs font-black text-[#111e17]">{product.reviews}</span>
+                    </div>
                   </div>
 
-                  <div className={isWideCard ? "md:max-w-3xl" : ""}>
-                    <h3 className={`font-heading font-extrabold leading-snug text-dark mb-2 ${isWideCard ? "text-xl md:text-2xl" : "text-lg"}`}>
-                      {product.title}
-                    </h3>
-                    <p className={`font-body leading-relaxed text-gray-500 ${isWideCard ? "text-sm md:text-base" : "text-sm"}`}>
-                      {product.desc}
-                    </p>
+                  {/* Split Layout: Image & Title */}
+                  <div className="flex flex-col sm:flex-row gap-6 items-center mb-6">
+                    <div className="w-36 h-36 bg-white rounded-2xl p-3 flex items-center justify-center border border-gray-100 shrink-0 shadow-sm relative overflow-hidden group-hover:scale-[1.03] transition-transform duration-300">
+                      <img
+                        src={product.image}
+                        alt={product.title}
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-heading text-lg md:text-xl font-extrabold text-[#111e17] leading-snug mb-2">
+                        {product.title}
+                      </h3>
+                      {/* Product Tags */}
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {product.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="bg-[#f0f5f1] text-[#013220] text-[9px] font-extrabold px-2 py-0.5 rounded-md border border-[#86b09c]/15"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="font-body text-xs text-[#3a4740] leading-relaxed">
+                        {product.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bullet Benefits */}
+                  <div className="border-t border-gray-200/50 pt-4 mb-6">
+                    <h4 className="text-[11px] font-black text-[#6e7d75] uppercase tracking-wider mb-2.5">
+                      Key Health Benefits:
+                    </h4>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 list-none p-0 m-0">
+                      {product.benefits.map((benefit) => (
+                        <li key={benefit} className="flex items-center gap-2 text-xs font-bold text-[#3a4740]">
+                          <Check size={14} className="text-[#0b4f35] shrink-0" />
+                          <span>{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
+
+                {/* Purchase Widget */}
+                <div>
+                  <div className="flex flex-col gap-2.5 mb-6">
+                    
+                    {/* Option 1: Subscribe */}
+                    <div
+                      onClick={() => handleToggleMode(product.id, "subscribe")}
+                      className={`flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                        currentMode === "subscribe"
+                          ? "border-[#013220] bg-white shadow-sm"
+                          : "border-gray-200 bg-transparent hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          currentMode === "subscribe" ? "border-[#013220]" : "border-gray-400"
+                        }`}>
+                          {currentMode === "subscribe" && (
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#013220]" />
+                          )}
+                        </div>
+                        <div className="text-left">
+                          <span className="block text-xs font-black text-[#111e17]">
+                            RepeatCare (Subscribe & Save 20%)
+                          </span>
+                          <span className="block text-[10px] text-[#0b4f35] font-extrabold uppercase">
+                            🚚 FREE Delivery + Mystery Gift
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-base font-black text-[#013220]">₹{product.subPrice}</span>
+                        <span className="block text-[10px] text-[#6e7d75] line-through">₹{product.oneTimePrice}</span>
+                      </div>
+                    </div>
+
+                    {/* Option 2: One-time */}
+                    <div
+                      onClick={() => handleToggleMode(product.id, "onetime")}
+                      className={`flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                        currentMode === "onetime"
+                          ? "border-[#013220] bg-white shadow-sm"
+                          : "border-gray-200 bg-transparent hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          currentMode === "onetime" ? "border-[#013220]" : "border-gray-400"
+                        }`}>
+                          {currentMode === "onetime" && (
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#013220]" />
+                          )}
+                        </div>
+                        <span className="text-xs font-black text-[#111e17]">
+                          One-Time Purchase
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-base font-black text-[#111e17]">₹{product.oneTimePrice}</span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* CTA Checkout button */}
+                  <a
+                    href={getWhatsAppLink(product, currentMode)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-[#013220] hover:bg-[#0b4f35] text-white text-sm font-extrabold tracking-wider uppercase transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    <MessageSquare size={16} /> 
+                    {currentMode === "subscribe" 
+                      ? `Subscribe For ₹${product.subPrice}/mo` 
+                      : `Buy Now For ₹${product.oneTimePrice}`
+                    }
+                  </a>
+                </div>
+
               </SectionReveal>
             );
           })}
         </div>
 
+        {/* Brand Promises Bar */}
         <SectionReveal
           direction="up"
-          delay={0.25}
-          className="mt-8 rounded-2xl border border-secondary/15 bg-white/85 p-5 shadow-sm backdrop-blur-sm"
+          delay={0.2}
+          className="mt-16 bg-[#f6f4ee] border border-gray-200/50 rounded-3xl p-6 flex flex-wrap gap-8 justify-around text-center"
         >
-          <p className="font-body text-xs leading-relaxed text-dark-soft/75">
-            Health products and kits should be used according to label directions and veterinary guidance. For severe symptoms, suspected parvo, or parasite concerns, consult a veterinarian promptly.
-          </p>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🩺</span>
+            <div className="text-left">
+              <div className="text-xs font-black text-[#111e17]">Vet-Formulated & Approved</div>
+              <div className="text-[10px] text-[#6e7d75]">Expertly blended by veterinary scientists</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🛡️</span>
+            <div className="text-left">
+              <div className="text-xs font-black text-[#111e17]">365-Day Guarantee</div>
+              <div className="text-[10px] text-[#6e7d75]">Don't notice results? Get your money back</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🌱</span>
+            <div className="text-left">
+              <div className="text-xs font-black text-[#111e17]">100% Safe & Clean</div>
+              <div className="text-[10px] text-[#6e7d75]">Xylitol-free, chemical-free ingredients</div>
+            </div>
+          </div>
         </SectionReveal>
+
       </div>
     </section>
   );
