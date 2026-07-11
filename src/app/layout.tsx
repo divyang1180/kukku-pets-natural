@@ -1,32 +1,10 @@
 import type { Metadata } from "next";
-import { Poppins, Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
-const poppins = Poppins({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const manrope = Manrope({
-  variable: "--font-accent",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Kukku Pets Natural — Natural Dental Water Additive for Dogs",
+  title: "Kukku Pets Natural — Dental Water Additive for Dogs | India",
   description:
-    "Kukku Pets Natural dental water additive freshens your dog's breath, helps reduce plaque, and supports daily oral hygiene. Natural ingredients, vet-inspired formula. Easy to use — just add to water.",
+    "India's first herbal dental water additive for dogs. Just add to water — freshens breath, reduces plaque, supports daily oral health. Neem, aloe vera, green tea. FSSAI certified.",
   keywords: [
     "dog dental water additive",
     "natural dog oral care",
@@ -58,11 +36,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${poppins.variable} ${inter.variable} ${manrope.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-background text-dark font-body">
+    <html lang="en" className="h-full antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+      </head>
+      <body className="min-h-full">
         {children}
       </body>
     </html>
