@@ -7,6 +7,15 @@ import { NAV_LINKS } from "@/constants/navigation";
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    const target = document.querySelector(href);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <>
       {/* ANNOUNCEMENT BAR */}
@@ -31,11 +40,25 @@ export default function Navbar() {
           <ul className="nav-links">
             {NAV_LINKS.map((link) => (
               <li key={link.name}>
-                <a href={link.href}>{link.name}</a>
+                <a href={link.href} onClick={(e) => {
+                  if (link.href.startsWith("#")) {
+                    e.preventDefault();
+                    const target = document.querySelector(link.href);
+                    if (target) {
+                      target.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }
+                }}>{link.name}</a>
               </li>
             ))}
             <li>
-              <a href="#contact" className="nav-cta">
+              <a href="#contact" className="nav-cta" onClick={(e) => {
+                e.preventDefault();
+                const target = document.querySelector("#contact");
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth" });
+                }
+              }}>
                 Contact Us 📬
               </a>
             </li>
@@ -62,7 +85,7 @@ export default function Navbar() {
               <a
                 key={link.name}
                 href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className="font-heading font-medium text-lg text-dark hover:text-primary transition-colors py-2 block text-center"
               >
                 {link.name}
@@ -70,7 +93,7 @@ export default function Navbar() {
             ))}
             <a
               href="#contact"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, "#contact")}
               className="nav-cta text-center py-2 px-6"
               style={{ width: "80%", display: "block", margin: "10px auto" }}
             >

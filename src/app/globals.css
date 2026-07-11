@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: var(--green);
+  --color-secondary: var(--green-mid);
+  --color-accent: var(--gold);
+  --color-dark: var(--text);
+  --color-background: var(--cream);
+  --color-surface: var(--white);
+  --shadow-glow-primary: 0 0 20px rgba(44, 122, 60, 0.4);
+}
+
 /* ── STYLE SETTINGS FROM kukkupets_website.html ── */
 :root {
   --green: #2C7A3C;
