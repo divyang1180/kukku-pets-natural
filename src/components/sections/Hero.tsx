@@ -15,7 +15,7 @@ export default function Hero() {
           Zero Brushing Stress.
         </h1>
         <p className="hero-sub fade-up d2">
-          India&apos;s first herbal dental water additive for dogs. Just add a capful to their water bowl. Powered by neem, aloe vera &amp; green tea — completely tasteless, 100% natural.
+          India’s first herbal dental water additive for dogs. Just add a capful to their water bowl. Powered by neem, aloe vera &amp; green tea — completely tasteless, 100% natural.
         </p>
         <div className="hero-ctas fade-up d3">
           <a href="#contact" className="btn-primary">

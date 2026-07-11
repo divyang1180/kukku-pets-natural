@@ -8,7 +8,7 @@ export default function Ingredients() {
       <div className="container">
         <div className="eyebrow">Ingredients</div>
         <h2 className="section-title">Powered by Pure Nature</h2>
-        <p className="section-sub">No chemicals. No artificial fillers. Just India&apos;s most trusted botanical ingredients — working with your dog&apos;s natural biology.</p>
+        <p className="section-sub">No chemicals. No artificial fillers. Just India’s most trusted botanical ingredients — working with your dog’s natural biology.</p>
         <div className="ing-grid">
           <div className="ing-card">
             <div className="ing-icon">🍵</div>
@@ -19,7 +19,7 @@ export default function Ingredients() {
           <div className="ing-card">
             <div className="ing-icon">🌿</div>
             <h3>Neem Extract</h3>
-            <p>India&apos;s most revered antibacterial herb, used for centuries in oral care. Fights the bacteria that cause plaque, tartar, and gum inflammation.</p>
+            <p>India’s most revered antibacterial herb, used for centuries in oral care. Fights the bacteria that cause plaque, tartar, and gum inflammation.</p>
             <span className="ing-tag">Ayurvedic · Anti-bacterial</span>
           </div>
           <div className="ing-card">

@@ -13,12 +13,12 @@ export default function WhyChooseUs() {
           <div className="why-card">
             <div className="why-icon">🌿</div>
             <h3>Pure Herbal Formula</h3>
-            <p>Neem, green tea, aloe vera, and mint — India&apos;s most trusted botanicals, formulated for daily pet oral care.</p>
+            <p>Neem, green tea, aloe vera, and mint — India’s most trusted botanicals, formulated for daily pet oral care.</p>
           </div>
           <div className="why-card">
             <div className="why-icon">☀️</div>
             <h3>10-Second Daily Routine</h3>
-            <p>No brushing battles. No stress. Just add to water and let your dog&apos;s natural hydration habit do the work.</p>
+            <p>No brushing battles. No stress. Just add to water and let your dog’s natural hydration habit do the work.</p>
           </div>
           <div className="why-card">
             <div className="why-icon">🛡️</div>
@@ -38,17 +38,17 @@ export default function WhyChooseUs() {
           <div className="why-card">
             <div className="why-icon">💚</div>
             <h3>Trusted by 50,000+ Families</h3>
-            <p>Pet parents across India trust Kukku Pets Natural for their dog&apos;s daily oral health routine.</p>
+            <p>Pet parents across India trust Kukku Pets Natural for their dog’s daily oral health routine.</p>
           </div>
           <div className="why-card">
             <div className="why-icon">💧</div>
             <h3>Tasteless &amp; Odorless</h3>
-            <p>Even the pickiest dogs won&apos;t notice a difference in their water — they just drink, and benefit from every sip.</p>
+            <p>Even the pickiest dogs won’t notice a difference in their water — they just drink, and benefit from every sip.</p>
           </div>
           <div className="why-card">
             <div className="why-icon">💰</div>
             <h3>Affordable Every Day</h3>
-            <p>Less than ₹12 per day for your dog&apos;s complete dental health routine. Cheaper than one vet dental cleaning per year.</p>
+            <p>Less than ₹12 per day for your dog’s complete dental health routine. Cheaper than one vet dental cleaning per year.</p>
           </div>
         </div>
       </div>

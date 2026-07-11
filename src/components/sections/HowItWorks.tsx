@@ -8,17 +8,17 @@ export default function HowItWorks() {
       <div className="container">
         <div className="eyebrow">How It Works</div>
         <h2 className="section-title">Four Steps. Ten Seconds. Every Day.</h2>
-        <p className="section-sub">Supporting your dog&apos;s oral health has never been this simple.</p>
+        <p className="section-sub">Supporting your dog’s oral health has never been this simple.</p>
         <div className="how-steps">
           <div className="step-card">
             <div className="step-num">1</div>
             <h3>Fill the Bowl</h3>
-            <p>Start with fresh, clean drinking water in your dog&apos;s bowl — as you do every day.</p>
+            <p>Start with fresh, clean drinking water in your dog’s bowl — as you do every day.</p>
           </div>
           <div className="step-card">
             <div className="step-num">2</div>
             <h3>Add a Capful</h3>
-            <p>Measure one capful of Kukku Pets Natural and pour it into the water bowl. That&apos;s it.</p>
+            <p>Measure one capful of Kukku Pets Natural and pour it into the water bowl. That’s it.</p>
           </div>
           <div className="step-card">
             <div className="step-num">3</div>

@@ -41,7 +41,7 @@ export default function Testimonials() {
         <div className="reviews-grid">
           <div className="review-card">
             <div className="rev-stars">★★★★★</div>
-            <p className="rev-text">&ldquo;Max&apos;s breath was terrible for years. Within 2 weeks of using Kukku, the bad smell is completely gone. I can finally enjoy doggy kisses again! Absolutely love this product.&rdquo;</p>
+            <p className="rev-text">&ldquo;Max’s breath was terrible for years. Within 2 weeks of using Kukku, the bad smell is completely gone. I can finally enjoy doggy kisses again! Absolutely love this product.&rdquo;</p>
             <div className="rev-author">
               <div className="rev-avatar">S</div>
               <div>
@@ -63,7 +63,7 @@ export default function Testimonials() {
           </div>
           <div className="review-card">
             <div className="rev-stars">★★★★★</div>
-            <p className="rev-text">&ldquo;As a vet, I&apos;m cautious about recommending products. But Kukku&apos;s formula is clean, well-thought-out, and the neem + aloe combination is genuinely effective. I&apos;ve started recommending it to my patients.&rdquo;</p>
+            <p className="rev-text">&ldquo;As a vet, I’m cautious about recommending products. But Kukku’s formula is clean, well-thought-out, and the neem + aloe combination is genuinely effective. I’ve started recommending it to my patients.&rdquo;</p>
             <div className="rev-author">
               <div className="rev-avatar">🩺</div>
               <div>
@@ -85,7 +85,7 @@ export default function Testimonials() {
           </div>
           <div className="review-card">
             <div className="rev-stars">★★★★★</div>
-            <p className="rev-text">&ldquo;The fact that it&apos;s tasteless is a game changer. My dog has no idea anything is different — he just drinks his water. But his teeth are genuinely cleaner at his 6-week vet visit. Magic in a bottle!&rdquo;</p>
+            <p className="rev-text">&ldquo;The fact that it’s tasteless is a game changer. My dog has no idea anything is different — he just drinks his water. But his teeth are genuinely cleaner at his 6-week vet visit. Magic in a bottle!&rdquo;</p>
             <div className="rev-author">
               <div className="rev-avatar">V</div>
               <div>
@@ -96,7 +96,7 @@ export default function Testimonials() {
           </div>
           <div className="review-card">
             <div className="rev-stars">★★★★★</div>
-            <p className="rev-text">&ldquo;Love that it&apos;s made in India with Indian herbs. Neem in a pet product makes total sense to me — it&apos;s what our grandmothers used. Kukku understands the Indian pet parent&apos;s mindset perfectly.&rdquo;</p>
+            <p className="rev-text">&ldquo;Love that it’s made in India with Indian herbs. Neem in a pet product makes total sense to me — it’s what our grandmothers used. Kukku understands the Indian pet parent’s mindset perfectly.&rdquo;</p>
             <div className="rev-author">
               <div className="rev-avatar">M</div>
               <div>

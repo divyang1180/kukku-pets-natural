@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Kukku Pets Natural — Dental Water Additive for Dogs | India",
   description:
-    "India's first herbal dental water additive for dogs. Just add to water — freshens breath, reduces plaque, supports daily oral health. Neem, aloe vera, green tea. FSSAI certified.",
+    "India’s first herbal dental water additive for dogs. Just add to water — freshens breath, reduces plaque, supports daily oral health. Neem, aloe vera, green tea. FSSAI certified.",
   keywords: [
     "dog dental water additive",
     "natural dog oral care",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Kukku Pets Natural — Healthy Smile, Happy Dog",
     description:
-      "Natural dental water additive that freshens breath, helps reduce plaque, and supports your dog's daily oral health.",
+      "Natural dental water additive that freshens breath, helps reduce plaque, and supports your dog’s daily oral health.",
     type: "website",
     locale: "en_US",
     siteName: "Kukku Pets Natural",

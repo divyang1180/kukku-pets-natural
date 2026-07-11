@@ -8,7 +8,7 @@ export default function DentalCareGuide() {
       <div className="container">
         <div className="eyebrow">The Difference</div>
         <h2 className="section-title">With Kukku vs Without Kukku</h2>
-        <p className="section-sub">See what daily use of Kukku Pets Natural means for your dog&apos;s oral health over time.</p>
+        <p className="section-sub">See what daily use of Kukku Pets Natural means for your dog’s oral health over time.</p>
         <div className="compare-grid">
           <div className="compare-card bad">
             <div className="compare-head">
