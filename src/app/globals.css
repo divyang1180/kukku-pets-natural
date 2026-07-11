@@ -876,7 +876,7 @@ footer {
   margin-bottom: 3rem;
 }
 @media(max-width:750px){.footer-top{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.footer-top{grid-template-columns:1fr}}
+@media(max-width:640px){.footer-top{grid-template-columns:1fr}}
 .footer-brand .logo-text {
   color: #fff;
   font-size: 18px;
@@ -986,14 +986,18 @@ footer {
   background: var(--green);
 }
 
-@media(max-width:768px){
+@media(max-width:1023px){
   .nav-links{display:none}
+  .product-inner{grid-template-columns:1fr;gap:2.5rem}
+}
+
+@media(max-width:768px){
   .hero{padding:3.5rem 1.2rem 3rem}
   section{padding:3.5rem 1.2rem}
-  .product-inner{grid-template-columns:1fr;gap:2.5rem}
   .hero-float{display:none}
   .proof-divider{display:none}
   .proof-bar-inner{gap:1.5rem}
+  .compare-grid{grid-template-columns:1fr}
 }
 
 /* ── ANIMATIONS ── */

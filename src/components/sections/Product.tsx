@@ -14,9 +14,7 @@ export default function Product() {
               style={{
                 width: "100%",
                 borderRadius: "20px",
-                boxShadow: "var(--shadow-lg)",
-                minHeight: "400px",
-                objectFit: "cover"
+                boxShadow: "var(--shadow-lg)"
               }}
             />
             <div className="badge-float tl">🌿 Herbal Formula</div>
