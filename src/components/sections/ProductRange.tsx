@@ -19,11 +19,6 @@ interface Product {
 }
 
 export default function ProductRange() {
-  const [purchaseModes, setPurchaseModes] = useState<Record<string, "subscribe" | "onetime">>({
-    "dental-additive": "subscribe",
-    "dental-wipes": "subscribe",
-  });
-
   const products: Product[] = [
     {
       id: "dental-additive",
@@ -53,19 +48,9 @@ export default function ProductRange() {
     },
   ];
 
-  const handleToggleMode = (productId: string, mode: "subscribe" | "onetime") => {
-    setPurchaseModes((prev) => ({
-      ...prev,
-      [productId]: mode,
-    }));
-  };
-
-  const getWhatsAppLink = (product: Product, mode: "subscribe" | "onetime") => {
-    const price = mode === "subscribe" ? product.subPrice : product.oneTimePrice;
+  const getWhatsAppLink = (product: Product) => {
     const text = encodeURIComponent(
-      `Hi! I would like to order the "${product.title}" (${
-        mode === "subscribe" ? "Subscribe & Save 20%" : "One-time purchase"
-      }) for ₹${price}. Please let me know how to proceed!`
+      `Hi! I would like early access notifications for the "${product.title}" (Coming Soon). Please let me know when it launches!`
     );
     return `https://wa.me/918160526176?text=${text}`;
   };
@@ -89,13 +74,7 @@ export default function ProductRange() {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
-          {products.map((product, idx) => {
-            const currentMode = purchaseModes[product.id] || "subscribe";
-            const currentPrice = currentMode === "subscribe" ? product.subPrice : product.oneTimePrice;
-            const originalPrice = product.oneTimePrice;
-            const discount = Math.round(((originalPrice - product.subPrice) / originalPrice) * 100);
-
-            return (
+          {products.map((product, idx) => (
               <SectionReveal
                 key={product.id}
                 direction="up"
@@ -103,11 +82,9 @@ export default function ProductRange() {
                 className="bg-[#fdfbf7] border border-gray-200/50 rounded-3xl p-6 flex flex-col justify-between shadow-md hover:shadow-xl transition-all duration-300 relative group"
               >
                 {/* Sale Badge */}
-                {currentMode === "subscribe" && (
-                  <span className="absolute top-4 left-4 z-10 bg-[#0b4f35] text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm">
-                    Save {discount}% + Free Gift 🎁
-                  </span>
-                )}
+                <span className="absolute top-4 left-4 z-10 bg-[#013220] text-[#86b09c] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm border border-[#86b09c]/30">
+                  Launching Soon ✨
+                </span>
 
                 {/* Top Section: Tags and Rating */}
                 <div>
@@ -171,88 +148,40 @@ export default function ProductRange() {
                   </div>
                 </div>
 
-                {/* Purchase Widget */}
+                {/* Coming Soon Widget */}
                 <div>
-                  <div className="flex flex-col gap-2.5 mb-6">
-                    
-                    {/* Option 1: Subscribe */}
-                    <div
-                      onClick={() => handleToggleMode(product.id, "subscribe")}
-                      className={`flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
-                        currentMode === "subscribe"
-                          ? "border-[#013220] bg-white shadow-sm"
-                          : "border-gray-200 bg-transparent hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                          currentMode === "subscribe" ? "border-[#013220]" : "border-gray-400"
-                        }`}>
-                          {currentMode === "subscribe" && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#013220]" />
-                          )}
-                        </div>
-                        <div className="text-left">
-                          <span className="block text-xs font-black text-[#111e17]">
-                            RepeatCare (Subscribe & Save 20%)
-                          </span>
-                          <span className="block text-[10px] text-[#0b4f35] font-extrabold uppercase">
-                            🚚 FREE Delivery + Mystery Gift
-                          </span>
-                        </div>
+                  <div className="bg-white border border-[#86b09c]/30 rounded-2xl p-4 flex items-center justify-between shadow-sm mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-[#f0f5f1] flex items-center justify-center text-[#0b4f35]">
+                        <Sparkles size={18} />
                       </div>
-                      <div className="text-right">
-                        <span className="block text-base font-black text-[#013220]">₹{product.subPrice}</span>
-                        <span className="block text-[10px] text-[#6e7d75] line-through">₹{product.oneTimePrice}</span>
-                      </div>
-                    </div>
-
-                    {/* Option 2: One-time */}
-                    <div
-                      onClick={() => handleToggleMode(product.id, "onetime")}
-                      className={`flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
-                        currentMode === "onetime"
-                          ? "border-[#013220] bg-white shadow-sm"
-                          : "border-gray-200 bg-transparent hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                          currentMode === "onetime" ? "border-[#013220]" : "border-gray-400"
-                        }`}>
-                          {currentMode === "onetime" && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#013220]" />
-                          )}
-                        </div>
-                        <span className="text-xs font-black text-[#111e17]">
-                          One-Time Purchase
+                      <div className="text-left">
+                        <span className="block text-xs font-black text-[#111e17] uppercase tracking-wider">
+                          Launching Soon
+                        </span>
+                        <span className="block text-[10px] text-[#6e7d75]">
+                          Early access reservations open now
                         </span>
                       </div>
-                      <div>
-                        <span className="text-base font-black text-[#111e17]">₹{product.oneTimePrice}</span>
-                      </div>
                     </div>
-
+                    <span className="bg-[#013220] text-[#86b09c] text-xs font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full shrink-0">
+                      Coming Soon
+                    </span>
                   </div>
 
                   {/* CTA Checkout button */}
                   <a
-                    href={getWhatsAppLink(product, currentMode)}
+                    href={getWhatsAppLink(product)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-[#013220] hover:bg-[#0b4f35] text-white text-sm font-extrabold tracking-wider uppercase transition-all duration-300 shadow-md hover:shadow-lg"
                   >
-                    <MessageSquare size={16} /> 
-                    {currentMode === "subscribe" 
-                      ? `Subscribe For ₹${product.subPrice}/mo` 
-                      : `Buy Now For ₹${product.oneTimePrice}`
-                    }
+                    <MessageSquare size={16} /> Notify Me On WhatsApp · Coming Soon
                   </a>
                 </div>
 
               </SectionReveal>
-            );
-          })}
+            ))}
         </div>
 
         {/* Brand Promises Bar */}

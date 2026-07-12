@@ -46,9 +46,9 @@ export default function WhyChooseUs() {
             <p>Even the pickiest dogs won’t notice a difference in their water — they just drink, and benefit from every sip.</p>
           </div>
           <div className="why-card">
-            <div className="why-icon">💰</div>
-            <h3>Affordable Every Day</h3>
-            <p>Less than ₹12 per day for your dog’s complete dental health routine. Cheaper than one vet dental cleaning per year.</p>
+            <div className="why-icon">✨</div>
+            <h3>Launching Soon</h3>
+            <p>We are putting the finishing touches on our formulas. Join our notification list for exclusive early access and launch offers.</p>
           </div>
         </div>
       </div>

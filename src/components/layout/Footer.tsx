@@ -157,7 +157,7 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-2.5">
             <Heart size={20} className="text-[#86b09c]" />
-            <span className="text-[10px] font-black uppercase tracking-wider text-white">100% Natural & Safe</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-white">Natural & Safe</span>
           </div>
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🇮🇳</span>

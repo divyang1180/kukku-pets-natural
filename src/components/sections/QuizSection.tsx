@@ -53,24 +53,20 @@ export default function QuizSection() {
       case "plaque":
         return {
           title: "Herbal Dental Tooth Wipes (50 Wipes)",
-          price: 399,
-          origPrice: 499,
           desc: "Our textured soft dental wipes are pre-soaked with natural botanicals to physically clear plaque and freshen gums.",
           why: "Manual wipes allow you to target specific yellow teeth areas and physically scrub soft plaque away before it hardens.",
           image: "/images/testimonial-dogs.png",
-          whatsappText: `Hi! I completed the Kukku Quiz for ${petName || "my dog"} and got recommended the "Herbal Dental Wipes" with 20% Coupon "QUIZ20" for ₹399. Please take my order!`,
+          whatsappText: `Hi! I completed the Kukku Quiz for ${petName || "my dog"} and got recommended the "Herbal Dental Wipes" (Coming Soon). Please notify me when it launches!`,
         };
       case "gingivitis":
       case "breath":
       default:
         return {
           title: "Natural Dental Water Additive (250ml)",
-          price: 599,
-          origPrice: 749,
           desc: "Our premium tasteless & odorless water additive targets plaque and bad breath at the source from every sip.",
           why: "Zinc gluconate and green tea catechins bind calcium to slow plaque structural consolidation.",
           image: "/images/product-bottle.png",
-          whatsappText: `Hi! I completed the Kukku Quiz for ${petName || "my dog"} and got recommended the "Dental Water Additive" with 20% Coupon "QUIZ20" for ₹599. Please take my order!`,
+          whatsappText: `Hi! I completed the Kukku Quiz for ${petName || "my dog"} and got recommended the "Dental Water Additive" (Coming Soon). Please notify me when it launches!`,
         };
     }
   };
@@ -334,12 +330,13 @@ export default function QuizSection() {
                     </p>
                   </div>
 
-                  {/* Pricing block */}
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black text-[#013220]">₹{recommendation.price}</span>
-                    <span className="text-sm text-[#6e7d75] line-through">₹{recommendation.origPrice}</span>
-                    <span className="text-xs text-[#0b4f35] font-black uppercase tracking-wider ml-1 bg-[#f0f5f1] px-2 py-0.5 rounded">
-                      Save 20%
+                  {/* Status block */}
+                  <div className="flex items-center gap-2.5">
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#013220] text-[#86b09c] text-xs font-black uppercase tracking-widest rounded-full shadow-sm">
+                      Coming Soon ✨
+                    </span>
+                    <span className="text-xs text-[#6e7d75] font-bold">
+                      Early access reservations open
                     </span>
                   </div>
                 </div>
@@ -354,7 +351,7 @@ export default function QuizSection() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#013220] hover:bg-[#0b4f35] text-white text-sm font-extrabold uppercase tracking-wider transition-all shadow-md"
                 >
-                  <MessageSquare size={16} /> Order recommendation via WhatsApp
+                  <MessageSquare size={16} /> Notify Me on WhatsApp · Coming Soon
                 </a>
                 <button
                   onClick={handleReset}
