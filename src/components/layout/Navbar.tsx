@@ -16,11 +16,41 @@ export default function Navbar() {
     }
   };
 
+  // Dispatch filter event to ProductRange and scroll to it
+  const handleFilterSelect = (filter: string) => {
+    window.dispatchEvent(new CustomEvent("set-product-filter", { detail: filter }));
+    setOpenDropdown(null);
+    setIsMobileMenuOpen(false);
+    const target = document.querySelector("#product-range");
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
   const navItems = [
-    { name: "Shop Best Sellers", href: "#product-range" },
-    { name: "Health Quiz 🧬", href: "#quiz-section" },
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "Reviews", href: "#reviews" },
+    { name: "Shop All", href: "#product-range", filter: "All" },
+    { name: "Best Sellers", href: "#product-range", filter: "Best sellers" },
+    {
+      name: "Shop by Problem",
+      href: "#product-range",
+      dropdown: [
+        { name: "Bad Breath", filter: "Bad breath" },
+        { name: "Ticks & Fleas", filter: "Ticks & fleas" },
+        { name: "Itchy Skin", filter: "Itchy skin" },
+        { name: "Stiff Joints", filter: "Joints" },
+      ],
+    },
+    {
+      name: "Shop by Category",
+      href: "#product-range",
+      dropdown: [
+        { name: "Oral Care", filter: "Oral care" },
+        { name: "Grooming", filter: "Grooming" },
+        { name: "Supplements", filter: "Supplements" },
+      ],
+    },
+    { name: "How it works", href: "#how-it-works" },
+    { name: "Our story", href: "#founding-member" },
   ];
 
   return (
@@ -28,7 +58,7 @@ export default function Navbar() {
       {/* Announcement Bar */}
       <div className="bg-[#001f14] text-[#f0f5f1] py-2.5 px-4 text-center text-xs font-semibold tracking-wider flex items-center justify-center gap-2 shadow-inner">
         <Sparkles size={13} className="text-[#f5a623] animate-pulse" />
-        <span>RepeatCare SALE: Subscribe & Save 20% + FREE Shipping & Free Gift!</span>
+        <span>RepeatCare SALE: Subscribe &amp; Save 20% + FREE Shipping &amp; Free Gift!</span>
         <span className="hidden md:inline-block bg-[#f5a623] text-[#001f14] text-[9px] px-1.5 py-0.5 rounded-full font-bold ml-1 animate-bounce">
           ACTIVE
         </span>
@@ -48,20 +78,52 @@ export default function Navbar() {
           </a>
 
           {/* Desktop Nav Links */}
-          <ul className="hidden lg:flex items-center gap-8 list-none m-0 p-0">
+          <ul className="hidden lg:flex items-center gap-1 list-none m-0 p-0">
             {navItems.map((item) => (
-              <li key={item.name}>
+              <li
+                key={item.name}
+                className="relative"
+                onMouseEnter={() => item.dropdown && setOpenDropdown(item.name)}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
                 <a
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={`text-sm font-bold transition-all duration-200 ${
-                    item.href === "#quiz-section" 
-                      ? "text-[#0b4f35] hover:text-[#013220] px-3 py-1 bg-[#f0f5f1] rounded-full border border-[#86b09c]/25"
-                      : "text-[#3a4740] hover:text-[#013220]"
-                  }`}
+                  href={item.href ?? "#"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if ("filter" in item && item.filter) {
+                      handleFilterSelect(item.filter as string);
+                    } else {
+                      handleNavClick(e, item.href ?? "#");
+                    }
+                  }}
+                  className="flex items-center gap-1 px-3 py-4 text-sm font-semibold text-[#1a1a1a] hover:text-[#013220] transition-colors duration-200 relative group"
                 >
                   {item.name}
+                  {item.dropdown && (
+                    <span className="text-[10px] mt-0.5">
+                      {openDropdown === item.name ? "∧" : "∨"}
+                    </span>
+                  )}
+                  {/* Active underline for "Shop by Category" */}
+                  {item.name === "Shop by Category" && (
+                    <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[#0b4f35] rounded-full" />
+                  )}
                 </a>
+
+                {/* Dropdown */}
+                {item.dropdown && openDropdown === item.name && (
+                  <div className="absolute top-full left-0 mt-0 bg-white border border-gray-100 rounded-xl shadow-xl py-2 min-w-[180px] z-50 animate-fade-in">
+                    {item.dropdown.map((sub) => (
+                      <button
+                        key={sub.name}
+                        onClick={() => handleFilterSelect(sub.filter as string)}
+                        className="w-full text-left block px-4 py-2.5 text-sm text-[#3a4740] hover:text-[#013220] hover:bg-[#f0f5f1] transition-colors font-medium"
+                      >
+                        {sub.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -121,11 +183,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 onClick={(e) => handleNavClick(e, item.href)}
-                className={`w-full text-center font-bold text-base py-2.5 rounded-xl transition-colors ${
-                  item.href === "#quiz-section"
-                    ? "bg-[#f0f5f1] text-[#013220] border border-[#86b09c]/30"
-                    : "text-[#3a4740] hover:text-[#013220] hover:bg-gray-50"
-                }`}
+                className="w-full text-center font-semibold text-base py-2.5 rounded-xl text-[#3a4740] hover:text-[#013220] hover:bg-gray-50 transition-colors"
               >
                 {item.name}
               </a>

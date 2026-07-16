@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Star, ShieldCheck, Heart, Sparkles, ArrowRight } from "lucide-react";
+import { ShieldCheck, Heart, Sparkles, ArrowRight } from "lucide-react";
 
 export default function Hero() {
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -22,7 +22,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="bg-white pt-10 md:pt-16 pb-0 overflow-hidden relative animate-fade-in" id="home" style={{ padding: "4rem 0 0" }}>
+    <section className="bg-white pt-12 md:pt-20 pb-0 overflow-hidden relative" id="home">
       {/* Background radial glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(134,176,156,0.06)_0%,transparent_70%)] pointer-events-none rounded-full" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(245,166,35,0.04)_0%,transparent_70%)] pointer-events-none rounded-full" />
@@ -33,25 +33,20 @@ export default function Hero() {
           {/* Left Column: Headline and CTAs */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
-            {/* Trustpilot-style reviews rating */}
-            <div className="inline-flex items-center gap-2 bg-[#f6f4ee] px-4 py-1.5 rounded-full border border-gray-200/50 mb-6 shadow-sm">
-              <div className="flex items-center gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} className="fill-[#f5a623] text-[#f5a623]" />
-                ))}
-              </div>
-              <span className="text-xs font-bold text-[#111e17]">
-                Rated Excellent 4.9 <span className="text-[#6e7d75] font-normal">(5,000+ reviews)</span>
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 bg-[#e8f3ed] px-4 py-2 rounded-full mb-6">
+              <span className="w-2 h-2 rounded-full bg-[#f5a623] shrink-0"></span>
+              <span className="text-xs font-bold text-[#0b4f35] tracking-widest uppercase">
+                Herbal · Small-batch · Made in India
               </span>
             </div>
 
-            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#111e17] leading-[1.1] tracking-tight mb-5">
-              Join Over <span className="text-[#0b4f35]">50,000+ Happy</span> Indian Pet Families
+            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#111e17] leading-[1.1] tracking-tight mb-6">
+              Dental care your dog won't even notice.
             </h1>
 
             <p className="font-body text-base md:text-lg text-[#3a4740] leading-relaxed mb-8 max-w-2xl">
-              Tasty, vet-formulated dental supplements made locally with natural Ayurvedic herbs. 
-              Say goodbye to plaque, bad breath, and brushing battles — just add to their daily water bowl!
+              One capful of our herbal water additive in the bowl, once a day. Neem, green tea and aloe work on breath, plaque and gums — while your dog just drinks.
             </p>
 
             {/* CTAs */}

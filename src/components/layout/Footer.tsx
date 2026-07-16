@@ -88,7 +88,7 @@ export default function Footer() {
             <p className="text-xs text-gray-400 leading-relaxed mb-4">
               Get pet care advice, product releases, and exclusive subscription sales directly in your inbox.
             </p>
-            <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-sm">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 w-full max-w-sm">
               <input
                 type="email"
                 placeholder="Your email address"
@@ -104,7 +104,7 @@ export default function Footer() {
               <button 
                 type="submit" 
                 disabled={status === "loading"}
-                className="px-4 py-3 rounded-xl bg-[#0b4f35] hover:bg-[#013220] text-white font-bold text-xs uppercase tracking-wider transition-colors shrink-0 flex items-center gap-1.5"
+                className="px-4 py-3 rounded-xl bg-[#0b4f35] hover:bg-[#013220] text-white font-bold text-xs uppercase tracking-wider transition-colors shrink-0 flex items-center justify-center gap-1.5"
               >
                 {status === "loading" ? "..." : "Subscribe"}
                 <Send size={11} />

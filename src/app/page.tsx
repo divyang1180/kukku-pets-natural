@@ -9,12 +9,10 @@ import SmoothScroll from "@/components/layout/SmoothScroll";
 import Hero from "@/components/sections/Hero";
 import Categories from "@/components/sections/Categories";
 import ProductRange from "@/components/sections/ProductRange";
+import ShopByProblem from "@/components/sections/ShopByProblem";
 import Product from "@/components/sections/Product";
 import Ingredients from "@/components/sections/Ingredients";
 import DentalCareGuide from "@/components/sections/DentalCareGuide";
-import TrustStats from "@/components/sections/TrustStats";
-import Testimonials from "@/components/sections/Testimonials";
-import VetEndorsement from "@/components/sections/VetEndorsement";
 import QuizSection from "@/components/sections/QuizSection";
 import HowItWorks from "@/components/sections/HowItWorks";
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
@@ -37,6 +35,9 @@ export default function Home() {
         {/* 3. Shop Our Best Sellers Grid with Subscribe Options */}
         <ProductRange />
 
+        {/* 3b. Shop by Problem + Routine + Founding Member */}
+        <ShopByProblem />
+
         {/* 4. Flagship Product Highlight Spotlight Card */}
         <Product />
 
@@ -45,15 +46,6 @@ export default function Home() {
 
         {/* 6. Comparison Guide: With vs Without Kukku */}
         <DentalCareGuide />
-
-        {/* 7. Verified Customer Trust Statistics */}
-        <TrustStats />
-
-        {/* 8. Verified Customer Testimonials & Reviews */}
-        <Testimonials />
-
-        {/* 9. Vet Endorsement: Formulated & Recommended by Doctors */}
-        <VetEndorsement />
 
         {/* 10. Interactive 60-Second Biometric Pet Health Quiz Advisor */}
         <QuizSection />

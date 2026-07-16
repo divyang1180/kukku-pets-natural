@@ -1,66 +1,97 @@
 "use client";
 
 import React from "react";
+import SectionReveal from "../ui/SectionReveal";
+
+const badRows = [
+  { label: "Bad Breath Risk", pct: 85 },
+  { label: "Plaque Accumulation", pct: 90 },
+  { label: "Gum Irritation Risk", pct: 75 },
+  { label: "Owner Stress (brushing)", pct: 80 },
+];
+
+const goodRows = [
+  { label: "Fresh Breath", pct: 95 },
+  { label: "Plaque Reduction", pct: 82 },
+  { label: "Gum Wellness Support", pct: 88 },
+  { label: "Zero Brushing Effort", pct: 100 },
+];
 
 export default function DentalCareGuide() {
   return (
-    <section className="compare" id="compare">
-      <div className="container">
-        <div className="eyebrow">The Difference</div>
-        <h2 className="section-title">With Kukku vs Without Kukku</h2>
-        <p className="section-sub">See what daily use of Kukku Pets Natural means for your dog’s oral health over time.</p>
-        <div className="compare-grid">
-          <div className="compare-card bad">
-            <div className="compare-head">
-              <span className="ch-icon">😟</span>
-              <h3>Without Kukku Pets Natural</h3>
-            </div>
-            <div className="compare-row">
-              <span>Bad Breath Risk</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "85%", background: "#ef9a9a" }}></div></div>
-            </div>
-            <div className="compare-row">
-              <span>Plaque Accumulation</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "90%", background: "#ef9a9a" }}></div></div>
-            </div>
-            <div className="compare-row">
-              <span>Gum Irritation Risk</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "75%", background: "#ef9a9a" }}></div></div>
-            </div>
-            <div className="compare-row">
-              <span>Owner Stress (brushing)</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "80%", background: "#ef9a9a" }}></div></div>
-            </div>
-          </div>
-          <div className="compare-card good">
-            <div className="compare-head">
-              <span className="ch-icon">😄</span>
-              <h3>With Kukku Pets Natural</h3>
-            </div>
-            <div className="compare-row">
-              <span>Fresh Breath</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "95%", background: "var(--green-mid)" }}></div></div>
-            </div>
-            <div className="compare-row">
-              <span>Plaque Reduction</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "82%", background: "var(--green-mid)" }}></div></div>
-            </div>
-            <div className="compare-row">
-              <span>Gum Wellness Support</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "88%", background: "var(--green-mid)" }}></div></div>
-            </div>
-            <div className="compare-row">
-              <span>Zero Brushing Effort</span>
-              <div className="progress-wrap"><div className="progress-fill" style={{ width: "100%", background: "var(--green-mid)" }}></div></div>
-            </div>
-          </div>
-        </div>
-        <div style={{ background: "var(--green-light)", borderRadius: "var(--radius)", padding: "1.5rem 2rem", marginTop: "2rem", display: "flex", alignItems: "center", gap: "12px" }}>
-          <span style={{ fontSize: "24px" }}>💡</span>
-          <p style={{ fontSize: "14px", color: "var(--text-soft)", lineHeight: "1.65" }}>
-            <strong style={{ color: "var(--green)" }}>Real results take 4–6 weeks.</strong> Oral health works best as a daily habit. Most Kukku pet parents notice fresher breath within 14 days, with visible plaque improvement at the 6-week mark. Consistency is everything.
+    <section className="bg-white py-14 md:py-20" id="compare">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionReveal className="mb-10">
+          <p className="text-xs font-black uppercase tracking-widest text-[#0b4f35] mb-2">The Difference</p>
+          <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#111e17] mb-3">
+            With Kukku vs Without Kukku
+          </h2>
+          <p className="font-body text-sm md:text-base text-[#3a4740] max-w-xl">
+            See what daily use of Kukku Pets Natural means for your dog's oral health over time.
           </p>
+        </SectionReveal>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          {/* Bad Card */}
+          <SectionReveal direction="left" className="bg-[#fff8f8] border-2 border-[#ffcdd2] rounded-2xl p-5 md:p-7">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-2xl">😟</span>
+              <h3 className="font-heading text-base md:text-lg font-extrabold text-[#111e17]">
+                Without Kukku Pets Natural
+              </h3>
+            </div>
+            <div className="flex flex-col gap-4">
+              {badRows.map((row) => (
+                <div key={row.label}>
+                  <div className="flex justify-between text-xs font-semibold text-[#3a4740] mb-1">
+                    <span>{row.label}</span>
+                    <span>{row.pct}%</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-full bg-[#ef9a9a] rounded-full transition-all duration-700"
+                      style={{ width: `${row.pct}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionReveal>
+
+          {/* Good Card */}
+          <SectionReveal direction="right" className="bg-[#f1f8f1] border-2 border-[#c8e6c9] rounded-2xl p-5 md:p-7">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-2xl">😄</span>
+              <h3 className="font-heading text-base md:text-lg font-extrabold text-[#111e17]">
+                With Kukku Pets Natural
+              </h3>
+            </div>
+            <div className="flex flex-col gap-4">
+              {goodRows.map((row) => (
+                <div key={row.label}>
+                  <div className="flex justify-between text-xs font-semibold text-[#3a4740] mb-1">
+                    <span>{row.label}</span>
+                    <span>{row.pct}%</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-full bg-[#0b4f35] rounded-full transition-all duration-700"
+                      style={{ width: `${row.pct}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionReveal>
         </div>
+
+        {/* Tip bar */}
+        <SectionReveal direction="up" delay={0.1} className="mt-6 bg-[#e8f3ed] rounded-2xl p-5 flex items-start gap-4">
+          <span className="text-2xl shrink-0">💡</span>
+          <p className="font-body text-sm text-[#3a4740] leading-relaxed">
+            <strong className="text-[#0b4f35]">Real results take 4–6 weeks.</strong> Oral health works best as a daily habit. Most Kukku pet parents notice fresher breath within 14 days, with visible plaque improvement at the 6-week mark. Consistency is everything.
+          </p>
+        </SectionReveal>
       </div>
     </section>
   );

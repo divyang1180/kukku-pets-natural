@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Star, ArrowRight, Shield, HeartPulse } from "lucide-react";
+import { ArrowRight, Shield, HeartPulse } from "lucide-react";
 import SectionReveal from "../ui/SectionReveal";
 
 export default function Categories() {
@@ -101,7 +101,7 @@ export default function Categories() {
         {/* Split Callout Banners */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
-          {/* Card 1: Review Badge */}
+          {/* Card 1: Founding Member */}
           <SectionReveal
             direction="left"
             className="rounded-3xl bg-[#013220] text-white p-8 md:p-10 relative overflow-hidden flex flex-col justify-between items-start shadow-xl border border-white/5 group"
@@ -109,25 +109,25 @@ export default function Categories() {
             <div className="absolute -top-10 -right-10 w-44 h-44 bg-[radial-gradient(circle,rgba(255,255,255,0.06)_0%,transparent_70%)] pointer-events-none rounded-full" />
             
             <div className="mb-8 relative z-10">
-              <div className="flex items-center gap-1 text-[#f5a623] mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={18} className="fill-[#f5a623]" />
-                ))}
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-3xl">🌱</span>
+                <span className="text-xs font-black uppercase tracking-widest text-[#86b09c]">Founding Members</span>
               </div>
               <h3 className="font-heading text-2xl md:text-3xl font-extrabold mb-3 leading-tight">
-                The Top-Rated & Most Reviewed Pet Brand
+                Be First. Get 20% Off For Life.
               </h3>
               <p className="font-body text-sm text-[#f0f5f1]/80 leading-relaxed max-w-md">
-                Over 50,000 verified reviews from real pet parents who have experienced visible results.
+                We&apos;re just launching. Our first customers become founding members — 20% off every order, for life.
               </p>
             </div>
 
             <a
-              href="#reviews"
-              onClick={(e) => handleScroll(e, "#reviews")}
+              href="https://wa.me/918160526176?text=Hi!+I+want+to+become+a+founding+member+of+Kukku+Pets+Natural."
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-[#f6f4ee] text-[#013220] font-extrabold text-sm uppercase tracking-wider transition-all duration-300 shadow-md group-hover:translate-x-1"
             >
-              Explore Verified Reviews <ArrowRight size={14} />
+              Become a Founding Member <ArrowRight size={14} />
             </a>
           </SectionReveal>
 
