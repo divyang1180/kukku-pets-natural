@@ -54,7 +54,7 @@ export default function Categories() {
         
         {/* Section Header */}
         <SectionReveal className="text-center max-w-3xl mx-auto mb-12">
-          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#f0f5f1] text-[#013220] rounded-full text-xs font-accent font-extrabold uppercase tracking-widest mb-4 border border-[#86b09c]/25">
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#f0f5f1] text-[#013220] rounded-full text-sm font-accent font-extrabold uppercase tracking-widest mb-4 border border-[#86b09c]/25">
             🧬 Target Pet Health
           </span>
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#111e17] leading-tight mb-4">
@@ -86,11 +86,11 @@ export default function Categories() {
                   <h3 className="font-heading font-extrabold text-base text-[#111e17] mb-2 leading-snug">
                     {cat.title}
                   </h3>
-                  <p className="font-body text-xs text-[#6e7d75] leading-relaxed mb-4">
+                  <p className="font-body text-sm text-[#6e7d75] leading-relaxed mb-4">
                     {cat.desc}
                   </p>
                 </div>
-                <span className="inline-flex items-center gap-1 text-[11px] font-black text-[#0b4f35] uppercase tracking-wider group-hover:underline">
+                <span className="inline-flex items-center gap-1 text-xs font-black text-[#0b4f35] uppercase tracking-wider group-hover:underline">
                   Shop Now <ArrowRight size={12} />
                 </span>
               </a>
@@ -111,12 +111,12 @@ export default function Categories() {
             <div className="mb-8 relative z-10">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-3xl">🌱</span>
-                <span className="text-xs font-black uppercase tracking-widest text-[#86b09c]">Founding Members</span>
+                <span className="text-sm font-black uppercase tracking-widest text-[#86b09c]">Founding Members</span>
               </div>
               <h3 className="font-heading text-2xl md:text-3xl font-extrabold mb-3 leading-tight">
                 Be First. Get 20% Off For Life.
               </h3>
-              <p className="font-body text-sm text-[#f0f5f1]/80 leading-relaxed max-w-md">
+              <p className="font-body text-base text-[#f0f5f1]/80 leading-relaxed max-w-md">
                 We&apos;re just launching. Our first customers become founding members — 20% off every order, for life.
               </p>
             </div>
@@ -139,13 +139,13 @@ export default function Categories() {
             <div className="absolute -bottom-10 -right-10 w-44 h-44 bg-[radial-gradient(circle,rgba(11,79,53,0.04)_0%,transparent_70%)] pointer-events-none rounded-full" />
             
             <div className="mb-8 relative z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#e6ece8] text-[#0b4f35] rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#e6ece8] text-[#0b4f35] rounded-full text-xs font-black uppercase tracking-widest mb-4">
                 🔥 Hot Deal
               </span>
               <h3 className="font-heading text-2xl md:text-3xl font-extrabold text-[#111e17] mb-3 leading-tight">
                 Save Big on Our Full Product Range
               </h3>
-              <p className="font-body text-sm text-[#3a4740] leading-relaxed max-w-md">
+              <p className="font-body text-base text-[#3a4740] leading-relaxed max-w-md">
                 Build your pet's perfect care routine and save up to 20% + receive free gifts when you subscribe.
               </p>
             </div>

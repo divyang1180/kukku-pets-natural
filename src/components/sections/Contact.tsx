@@ -99,7 +99,7 @@ export default function Contact() {
       <div className="site-container relative z-10">
         {/* Section Header */}
         <SectionReveal className="contact-header">
-          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-accent font-extrabold uppercase tracking-widest mb-4">
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-accent font-extrabold uppercase tracking-widest mb-4">
             📬 Get in Touch
           </span>
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-extrabold text-dark leading-tight mb-4">

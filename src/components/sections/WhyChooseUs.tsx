@@ -19,11 +19,11 @@ export default function WhyChooseUs() {
     <section className="bg-[#fdfbf7] py-14 md:py-20" id="why">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionReveal className="mb-10">
-          <p className="text-xs font-black uppercase tracking-widest text-[#0b4f35] mb-2">Why Kukku</p>
+          <p className="text-sm font-black uppercase tracking-widest text-[#0b4f35] mb-2">Why Kukku</p>
           <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#111e17] mb-3">
             The Kukku Pets Difference
           </h2>
-          <p className="font-body text-sm md:text-base text-[#3a4740] max-w-xl">
+          <p className="font-body text-base md:text-lg text-[#3a4740] max-w-xl">
             We build everything around one goal: the simplest, safest, most effective daily dental care for Indian dogs.
           </p>
         </SectionReveal>
@@ -37,8 +37,8 @@ export default function WhyChooseUs() {
               className="bg-white border border-gray-100 rounded-2xl p-4 md:p-5 hover:shadow-md hover:border-[#86b09c]/40 transition-all duration-200"
             >
               <div className="text-2xl md:text-3xl mb-3">{r.icon}</div>
-              <h3 className="font-heading text-sm font-extrabold text-[#111e17] mb-1">{r.title}</h3>
-              <p className="font-body text-xs text-[#3a4740] leading-relaxed">{r.desc}</p>
+              <h3 className="font-heading text-base font-extrabold text-[#111e17] mb-1">{r.title}</h3>
+              <p className="font-body text-sm text-[#3a4740] leading-relaxed">{r.desc}</p>
             </SectionReveal>
           ))}
         </div>

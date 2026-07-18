@@ -31,13 +31,13 @@ export default function HowItWorks() {
     <section className="bg-white py-14 md:py-20" id="how-it-works">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionReveal className="mb-10">
-          <p className="text-xs font-black uppercase tracking-widest text-[#0b4f35] mb-2">
+          <p className="text-sm font-black uppercase tracking-widest text-[#0b4f35] mb-2">
             How It Works
           </p>
           <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#111e17] mb-3">
             Four Steps. Ten Seconds. Every Day.
           </h2>
-          <p className="font-body text-sm md:text-base text-[#3a4740] max-w-xl">
+          <p className="font-body text-base md:text-lg text-[#3a4740] max-w-xl">
             Supporting your dog's oral health has never been this simple.
           </p>
         </SectionReveal>
@@ -53,10 +53,10 @@ export default function HowItWorks() {
               <div className="w-10 h-10 rounded-full bg-[#013220] text-white text-sm font-black flex items-center justify-center mx-auto">
                 {step.num}
               </div>
-              <h3 className="font-heading text-sm md:text-base font-extrabold text-[#111e17]">
+              <h3 className="font-heading text-base md:text-lg font-extrabold text-[#111e17]">
                 {step.title}
               </h3>
-              <p className="font-body text-xs md:text-sm text-[#3a4740] leading-relaxed">
+              <p className="font-body text-sm md:text-base text-[#3a4740] leading-relaxed">
                 {step.desc}
               </p>
             </SectionReveal>

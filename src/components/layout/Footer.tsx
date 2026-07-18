@@ -59,10 +59,10 @@ export default function Footer() {
               <img 
                 src="/images/logo.png" 
                 alt="Kukku Pet Naturals" 
-                className="h-10 md:h-12 w-auto object-contain filter brightness-0 invert" 
+                className="h-14 md:h-16 w-auto object-contain filter brightness-0 invert" 
               />
             </a>
-            <p className="text-xs md:text-sm text-gray-400 leading-relaxed mb-6 max-w-sm">
+            <p className="text-sm md:text-base text-gray-400 leading-relaxed mb-6 max-w-sm">
               India’s first herbal dental water additive for dogs. Natural Ayurvedic formulations designed for effortless daily hygiene and a lifetime of happy, healthy smiles.
             </p>
             
@@ -82,10 +82,10 @@ export default function Footer() {
 
           {/* Newsletter Signup */}
           <div className="lg:col-span-4 text-left">
-            <h4 className="font-heading text-xs font-black tracking-widest text-white uppercase mb-4">
+            <h4 className="font-heading text-sm font-black tracking-widest text-white uppercase mb-4">
               Sign Up For News & Deals
             </h4>
-            <p className="text-xs text-gray-400 leading-relaxed mb-4">
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">
               Get pet care advice, product releases, and exclusive subscription sales directly in your inbox.
             </p>
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 w-full max-w-sm">
@@ -99,12 +99,12 @@ export default function Footer() {
                   if (status !== "loading") setStatus("idle");
                 }}
                 disabled={status === "loading"}
-                className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-[#86b09c]"
+                className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#86b09c]"
               />
               <button 
                 type="submit" 
                 disabled={status === "loading"}
-                className="px-4 py-3 rounded-xl bg-[#0b4f35] hover:bg-[#013220] text-white font-bold text-xs uppercase tracking-wider transition-colors shrink-0 flex items-center justify-center gap-1.5"
+                className="px-4 py-3 rounded-xl bg-[#0b4f35] hover:bg-[#013220] text-white font-bold text-sm uppercase tracking-wider transition-colors shrink-0 flex items-center justify-center gap-1.5"
               >
                 {status === "loading" ? "..." : "Subscribe"}
                 <Send size={11} />
@@ -119,10 +119,10 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="lg:col-span-2 text-left">
-            <h4 className="font-heading text-xs font-black tracking-widest text-white uppercase mb-4">
+            <h4 className="font-heading text-sm font-black tracking-widest text-white uppercase mb-4">
               Products
             </h4>
-            <ul className="space-y-2.5 text-xs p-0 m-0 list-none">
+            <ul className="space-y-2.5 text-sm p-0 m-0 list-none">
               <li><a href="#product-range" onClick={(e) => handleScroll(e, "#product-range")} className="hover:text-white transition-colors">Dental Water Additive</a></li>
               <li><a href="#product-range" onClick={(e) => handleScroll(e, "#product-range")} className="hover:text-white transition-colors">Herbal Wipes</a></li>
               <li><a href="#product-range" onClick={(e) => handleScroll(e, "#product-range")} className="hover:text-white transition-colors">Tick & Flea Spray</a></li>
@@ -132,10 +132,10 @@ export default function Footer() {
 
           {/* Contact Support */}
           <div className="lg:col-span-2 text-left">
-            <h4 className="font-heading text-xs font-black tracking-widest text-white uppercase mb-4">
+            <h4 className="font-heading text-sm font-black tracking-widest text-white uppercase mb-4">
               Support
             </h4>
-            <ul className="space-y-2.5 text-xs p-0 m-0 list-none">
+            <ul className="space-y-2.5 text-sm p-0 m-0 list-none">
               <li><a href="#how-it-works" onClick={(e) => handleScroll(e, "#how-it-works")} className="hover:text-white transition-colors">How It Works</a></li>
               <li><a href="#vets" onClick={(e) => handleScroll(e, "#vets")} className="hover:text-white transition-colors">Vet Endorsements</a></li>
               <li><a href="#faq" onClick={(e) => handleScroll(e, "#faq")} className="hover:text-white transition-colors">FAQs</a></li>
@@ -149,24 +149,24 @@ export default function Footer() {
         <div className="border-t border-white/5 py-8 flex flex-wrap justify-center md:justify-between items-center gap-6">
           <div className="flex items-center gap-2.5">
             <ShieldCheck size={20} className="text-[#86b09c]" />
-            <span className="text-[10px] font-black uppercase tracking-wider text-white">FSSAI Approved Ingredients</span>
+            <span className="text-xs font-black uppercase tracking-wider text-white">FSSAI Approved Ingredients</span>
           </div>
           <div className="flex items-center gap-2.5">
             <Award size={20} className="text-[#86b09c]" />
-            <span className="text-[10px] font-black uppercase tracking-wider text-white">GMP Certified Laboratory</span>
+            <span className="text-xs font-black uppercase tracking-wider text-white">GMP Certified Laboratory</span>
           </div>
           <div className="flex items-center gap-2.5">
             <Heart size={20} className="text-[#86b09c]" />
-            <span className="text-[10px] font-black uppercase tracking-wider text-white">Natural & Safe</span>
+            <span className="text-xs font-black uppercase tracking-wider text-white">Natural & Safe</span>
           </div>
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🇮🇳</span>
-            <span className="text-[10px] font-black uppercase tracking-wider text-white">Made in India</span>
+            <span className="text-xs font-black uppercase tracking-wider text-white">Made in India</span>
           </div>
         </div>
 
         {/* Bottom copyright row */}
-        <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-500">
+        <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
           <span>&copy; {new Date().getFullYear()} Kukku Pets Natural. All rights reserved. Created with love for dogs.</span>
           <div className="flex gap-4 flex-wrap justify-center">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>

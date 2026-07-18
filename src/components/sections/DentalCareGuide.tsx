@@ -22,11 +22,11 @@ export default function DentalCareGuide() {
     <section className="bg-white py-14 md:py-20" id="compare">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionReveal className="mb-10">
-          <p className="text-xs font-black uppercase tracking-widest text-[#0b4f35] mb-2">The Difference</p>
+          <p className="text-sm font-black uppercase tracking-widest text-[#0b4f35] mb-2">The Difference</p>
           <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#111e17] mb-3">
             With Kukku vs Without Kukku
           </h2>
-          <p className="font-body text-sm md:text-base text-[#3a4740] max-w-xl">
+          <p className="font-body text-base md:text-lg text-[#3a4740] max-w-xl">
             See what daily use of Kukku Pets Natural means for your dog's oral health over time.
           </p>
         </SectionReveal>
@@ -43,7 +43,7 @@ export default function DentalCareGuide() {
             <div className="flex flex-col gap-4">
               {badRows.map((row) => (
                 <div key={row.label}>
-                  <div className="flex justify-between text-xs font-semibold text-[#3a4740] mb-1">
+                  <div className="flex justify-between text-sm font-semibold text-[#3a4740] mb-1">
                     <span>{row.label}</span>
                     <span>{row.pct}%</span>
                   </div>
@@ -69,7 +69,7 @@ export default function DentalCareGuide() {
             <div className="flex flex-col gap-4">
               {goodRows.map((row) => (
                 <div key={row.label}>
-                  <div className="flex justify-between text-xs font-semibold text-[#3a4740] mb-1">
+                  <div className="flex justify-between text-sm font-semibold text-[#3a4740] mb-1">
                     <span>{row.label}</span>
                     <span>{row.pct}%</span>
                   </div>
@@ -88,7 +88,7 @@ export default function DentalCareGuide() {
         {/* Tip bar */}
         <SectionReveal direction="up" delay={0.1} className="mt-6 bg-[#e8f3ed] rounded-2xl p-5 flex items-start gap-4">
           <span className="text-2xl shrink-0">💡</span>
-          <p className="font-body text-sm text-[#3a4740] leading-relaxed">
+          <p className="font-body text-base text-[#3a4740] leading-relaxed">
             <strong className="text-[#0b4f35]">Real results take 4–6 weeks.</strong> Oral health works best as a daily habit. Most Kukku pet parents notice fresher breath within 14 days, with visible plaque improvement at the 6-week mark. Consistency is everything.
           </p>
         </SectionReveal>

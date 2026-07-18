@@ -80,13 +80,13 @@ export default function QuizSection() {
         {/* Section Header */}
         {step !== "result" && step !== "calculating" && (
           <SectionReveal className="text-center max-w-2xl mx-auto mb-12">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#f0f5f1] text-[#013220] rounded-full text-xs font-accent font-extrabold uppercase tracking-widest mb-4 border border-[#86b09c]/25">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#f0f5f1] text-[#013220] rounded-full text-sm font-accent font-extrabold uppercase tracking-widest mb-4 border border-[#86b09c]/25">
               🧬 Pet Health Advisor
             </span>
             <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-[#111e17] leading-tight mb-4">
               Find Your Pet's Perfect Product in 60 Seconds
             </h2>
-            <p className="font-body text-sm md:text-base text-[#3a4740] leading-relaxed">
+            <p className="font-body text-base md:text-lg text-[#3a4740] leading-relaxed">
               Take our interactive quiz to customize your dog's daily wellness routine based on their age, breed, and health concerns.
             </p>
           </SectionReveal>
@@ -200,7 +200,7 @@ export default function QuizSection() {
                     }`}
                   >
                     <span>{opt.label}</span>
-                    <span className="text-[10px] text-[#6e7d75] font-normal leading-normal">
+                    <span className="text-xs text-[#6e7d75] font-normal leading-normal">
                       Select to target natural Ayurvedic formulas
                     </span>
                   </button>
@@ -265,7 +265,7 @@ export default function QuizSection() {
               <h3 className="font-heading text-xl font-extrabold text-[#111e17] mb-3">
                 Formulating personalized recommendations...
               </h3>
-              <p className="font-body text-sm text-[#0b4f35] font-semibold animate-pulse">
+              <p className="font-body text-base text-[#0b4f35] font-semibold animate-pulse">
                 {loadingMessages[loadingStep]}
               </p>
             </div>
@@ -280,15 +280,15 @@ export default function QuizSection() {
                 <div className="flex items-center gap-3 text-left">
                   <span className="text-2xl">🎉</span>
                   <div>
-                    <h4 className="font-heading text-sm font-extrabold text-[#013220]">
+                    <h4 className="font-heading text-base font-extrabold text-[#013220]">
                       Quiz Completed Successfully!
                     </h4>
-                    <p className="font-body text-xs text-[#3a4740]">
+                    <p className="font-body text-sm text-[#3a4740]">
                       We've pre-applied a 20% discount coupon <strong className="text-[#013220]">"QUIZ20"</strong> to your order.
                     </p>
                   </div>
                 </div>
-                <div className="bg-[#013220] text-white text-[10px] font-black tracking-widest uppercase px-3 py-1.5 rounded-md">
+                <div className="bg-[#013220] text-white text-xs font-black tracking-widest uppercase px-3 py-1.5 rounded-md">
                   Coupon: QUIZ20
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function QuizSection() {
                       alt={recommendation.title}
                       className="max-h-full max-w-full object-contain"
                     />
-                    <span className="absolute -bottom-2 bg-[#f5a623] text-[#001f14] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                    <span className="absolute -bottom-2 bg-[#f5a623] text-[#001f14] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
                       Best Match ⭐
                     </span>
                   </div>
@@ -312,30 +312,30 @@ export default function QuizSection() {
 
                 {/* Product Info */}
                 <div className="md:col-span-8 text-left">
-                  <span className="text-[10px] font-black text-[#6e7d75] uppercase tracking-widest block mb-1">
+                  <span className="text-xs font-black text-[#6e7d75] uppercase tracking-widest block mb-1">
                     Recommended Formulation for {petName}
                   </span>
                   <h3 className="font-heading text-xl md:text-2xl font-extrabold text-[#111e17] leading-snug mb-3">
                     {recommendation.title}
                   </h3>
                   
-                  <p className="font-body text-sm text-[#3a4740] leading-relaxed mb-4">
+                  <p className="font-body text-base text-[#3a4740] leading-relaxed mb-4">
                     {recommendation.desc}
                   </p>
 
                   <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-3.5 flex gap-2.5 mb-4">
                     <Award size={18} className="text-[#f5a623] shrink-0 mt-0.5" />
-                    <p className="font-body text-xs text-[#3a4740] leading-relaxed">
+                    <p className="font-body text-sm text-[#3a4740] leading-relaxed">
                       <strong>Why this is perfect:</strong> {recommendation.why}
                     </p>
                   </div>
 
                   {/* Status block */}
                   <div className="flex items-center gap-2.5">
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#013220] text-[#86b09c] text-xs font-black uppercase tracking-widest rounded-full shadow-sm">
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#013220] text-[#86b09c] text-sm font-black uppercase tracking-widest rounded-full shadow-sm">
                       Coming Soon ✨
                     </span>
-                    <span className="text-xs text-[#6e7d75] font-bold">
+                    <span className="text-sm text-[#6e7d75] font-bold">
                       Early access reservations open
                     </span>
                   </div>

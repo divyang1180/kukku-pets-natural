@@ -14,7 +14,7 @@ export default function CTABanner() {
         <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
           Ready for Fresher Breath &amp; Healthier Teeth?
         </h2>
-        <p className="font-body text-sm sm:text-base text-white/75 mb-8 max-w-lg mx-auto leading-relaxed">
+        <p className="font-body text-base sm:text-lg text-white/75 mb-8 max-w-lg mx-auto leading-relaxed">
           Be among the first Indian pet families to try Kukku Pets Natural — launching soon with founding member perks.
         </p>
 

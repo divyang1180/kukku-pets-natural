@@ -147,7 +147,7 @@ export default function ProductRange() {
               <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-[#111e17] leading-tight">
                 Shop all products
               </h2>
-              <p className="font-body text-sm text-[#3a4740] mt-1">
+              <p className="font-body text-base text-[#3a4740] mt-1">
                 Small batches, launched one at a time. Reserve what&apos;s launching now &mdash;{" "}
                 <span className="text-[#0b4f35] font-semibold underline underline-offset-2 cursor-pointer">
                   get notified for what&apos;s next.
@@ -165,7 +165,7 @@ export default function ProductRange() {
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 ${
+                className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold border transition-all duration-200 ${
                   activeFilter === f
                     ? "bg-[#013220] text-white border-[#013220]"
                     : "bg-white text-[#3a4740] border-gray-200 hover:border-[#013220] hover:text-[#013220]"
@@ -191,7 +191,7 @@ export default function ProductRange() {
             >
               {/* Status Badge */}
               <div
-                className={`absolute top-3 left-3 z-10 px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${
+                className={`absolute top-3 left-3 z-10 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${
                   product.status === "launching"
                     ? "bg-[#f5a623] text-white"
                     : "bg-[#e8f3ed] text-[#0b4f35]"
@@ -211,7 +211,7 @@ export default function ProductRange() {
 
               {/* Card Body */}
               <div className="flex flex-col flex-1 p-4 gap-3">
-                <h3 className="font-heading text-sm font-extrabold text-[#0b4f35] leading-snug">
+                <h3 className="font-heading text-base font-extrabold text-[#0b4f35] leading-snug">
                   {product.title}
                 </h3>
 
@@ -220,7 +220,7 @@ export default function ProductRange() {
                   {product.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="bg-[#f0f5f1] text-[#3a4740] text-[9px] font-bold px-2 py-0.5 rounded-md border border-[#86b09c]/20"
+                      className="bg-[#f0f5f1] text-[#3a4740] text-[10px] font-bold px-2 py-0.5 rounded-md border border-[#86b09c]/20"
                     >
                       {tag}
                     </span>
@@ -229,14 +229,14 @@ export default function ProductRange() {
 
                 {/* Bottom CTA */}
                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-[#6e7d75]">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#6e7d75]">
                     Coming Soon
                   </span>
                   <a
                     href={getWhatsAppLink(product)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full transition-all duration-200 ${
+                    className={`text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full transition-all duration-200 ${
                       product.ctaType === "reserve"
                         ? "bg-[#013220] text-white hover:bg-[#0b4f35]"
                         : "border border-[#013220] text-[#013220] hover:bg-[#f0f5f1]"
@@ -259,22 +259,22 @@ export default function ProductRange() {
           <div className="flex items-center gap-3">
             <span className="text-3xl">&#x1F9BA;</span>
             <div className="text-left">
-              <div className="text-xs font-black text-[#111e17]">Vet-Formulated &amp; Approved</div>
-              <div className="text-[10px] text-[#6e7d75]">Expertly blended by veterinary scientists</div>
+              <div className="text-sm font-black text-[#111e17]">Vet-Formulated &amp; Approved</div>
+              <div className="text-xs text-[#6e7d75]">Expertly blended by veterinary scientists</div>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-3xl">&#x1F6E1;&#xFE0F;</span>
             <div className="text-left">
-              <div className="text-xs font-black text-[#111e17]">365-Day Guarantee</div>
-              <div className="text-[10px] text-[#6e7d75]">Don&apos;t notice results? Get your money back</div>
+              <div className="text-sm font-black text-[#111e17]">365-Day Guarantee</div>
+              <div className="text-xs text-[#6e7d75]">Don&apos;t notice results? Get your money back</div>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-3xl">&#x1F331;</span>
             <div className="text-left">
-              <div className="text-xs font-black text-[#111e17]">100% Safe &amp; Clean</div>
-              <div className="text-[10px] text-[#6e7d75]">Xylitol-free, chemical-free ingredients</div>
+              <div className="text-sm font-black text-[#111e17]">100% Safe &amp; Clean</div>
+              <div className="text-xs text-[#6e7d75]">Xylitol-free, chemical-free ingredients</div>
             </div>
           </div>
         </SectionReveal>

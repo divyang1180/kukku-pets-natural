@@ -36,7 +36,7 @@ export default function Hero() {
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 bg-[#e8f3ed] px-4 py-2 rounded-full mb-6">
               <span className="w-2 h-2 rounded-full bg-[#f5a623] shrink-0"></span>
-              <span className="text-xs font-bold text-[#0b4f35] tracking-widest uppercase">
+              <span className="text-sm font-bold text-[#0b4f35] tracking-widest uppercase">
                 Herbal · Small-batch · Made in India
               </span>
             </div>
@@ -71,15 +71,15 @@ export default function Hero() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full border-t border-gray-100 pt-6">
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="text-[#0b4f35] shrink-0" size={20} />
-                <span className="text-xs font-bold text-[#3a4740]">100% Tasteless & Safe</span>
+                <span className="text-sm font-bold text-[#3a4740]">100% Tasteless & Safe</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Heart className="text-[#0b4f35] shrink-0" size={20} />
-                <span className="text-xs font-bold text-[#3a4740]">Zero Brushing Stress</span>
+                <span className="text-sm font-bold text-[#3a4740]">Zero Brushing Stress</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Sparkles className="text-[#f5a623] shrink-0" size={20} />
-                <span className="text-xs font-bold text-[#3a4740]">365-Day Guarantee</span>
+                <span className="text-sm font-bold text-[#3a4740]">365-Day Guarantee</span>
               </div>
             </div>
 
@@ -98,8 +98,8 @@ export default function Hero() {
               <div className="absolute top-[20%] -left-6 bg-white border border-gray-100 rounded-2xl shadow-xl p-3.5 hidden sm:flex items-center gap-3 animate-bounce" style={{ animationDuration: '6s' }}>
                 <span className="text-2xl">🌿</span>
                 <div className="text-left">
-                  <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#6e7d75]">Ingredients</div>
-                  <div className="text-xs font-black text-[#111e17]">100% Natural Herbs</div>
+                  <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#6e7d75]">Ingredients</div>
+                  <div className="text-sm font-black text-[#111e17]">100% Natural Herbs</div>
                 </div>
               </div>
 
@@ -107,8 +107,8 @@ export default function Hero() {
               <div className="absolute bottom-[20%] -right-6 bg-white border border-gray-100 rounded-2xl shadow-xl p-3.5 hidden sm:flex items-center gap-3 animate-bounce" style={{ animationDuration: '8s', animationDelay: '1s' }}>
                 <span className="text-2xl">✨</span>
                 <div className="text-left">
-                  <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#6e7d75]">Results</div>
-                  <div className="text-xs font-black text-[#111e17]">Fresh Breath in 14 Days</div>
+                  <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#6e7d75]">Results</div>
+                  <div className="text-sm font-black text-[#111e17]">Fresh Breath in 14 Days</div>
                 </div>
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function Hero() {
 
       {/* Scrolling Marquee Ticker */}
       <div className="w-full overflow-hidden bg-[#013220] py-3.5 text-white border-y border-[#86b09c]/10 mt-16">
-        <div className="animate-marquee whitespace-nowrap flex items-center gap-12 font-bold text-xs uppercase tracking-widest">
+        <div className="animate-marquee whitespace-nowrap flex items-center gap-12 font-bold text-sm uppercase tracking-widest">
           {/* First Copy */}
           <div className="flex items-center gap-12 shrink-0">
             {tickerItems.map((item, index) => (

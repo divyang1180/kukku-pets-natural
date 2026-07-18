@@ -65,7 +65,7 @@ export default function ShopByProblem() {
             <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-[#111e17] mb-2">
               Shop by problem
             </h2>
-            <p className="font-body text-sm text-[#3a4740]">
+            <p className="font-body text-base text-[#3a4740]">
               Tell us what&apos;s bothering your dog — we&apos;ll show you what helps.
             </p>
           </SectionReveal>
@@ -79,10 +79,10 @@ export default function ShopByProblem() {
                 className={`${p.color} border ${p.border} rounded-2xl p-4 cursor-pointer hover:shadow-md transition-all duration-200 group`}
               >
                 <div className="text-2xl mb-2">{p.icon}</div>
-                <h3 className="font-heading text-sm font-extrabold text-[#0b4f35] mb-1 group-hover:underline">
+                <h3 className="font-heading text-base font-extrabold text-[#0b4f35] mb-1 group-hover:underline">
                   {p.title}
                 </h3>
-                <p className="font-body text-[11px] text-[#3a4740] leading-relaxed">
+                <p className="font-body text-sm text-[#3a4740] leading-relaxed">
                   {p.desc}
                 </p>
               </SectionReveal>
@@ -98,7 +98,7 @@ export default function ShopByProblem() {
             <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-[#111e17] mb-2">
               Ten seconds a day. That&apos;s the routine.
             </h2>
-            <p className="font-body text-sm text-[#3a4740]">
+            <p className="font-body text-base text-[#3a4740]">
               No brushing. No wrestling. No drama.
             </p>
           </SectionReveal>
@@ -116,10 +116,10 @@ export default function ShopByProblem() {
                 >
                   {step.num}
                 </div>
-                <h3 className="font-heading text-sm font-extrabold text-[#111e17]">
+                <h3 className="font-heading text-base font-extrabold text-[#111e17]">
                   {step.title}
                 </h3>
-                <p className="font-body text-xs text-[#3a4740] leading-relaxed">
+                <p className="font-body text-sm text-[#3a4740] leading-relaxed">
                   {step.desc}
                 </p>
               </SectionReveal>
@@ -138,7 +138,7 @@ export default function ShopByProblem() {
                 <h3 className="font-heading text-lg md:text-xl font-extrabold text-[#111e17] mb-2">
                   We&apos;re new — and we won&apos;t pretend otherwise.
                 </h3>
-                <p className="font-body text-sm text-[#3a4740] leading-relaxed max-w-2xl">
+                <p className="font-body text-base text-[#3a4740] leading-relaxed max-w-2xl">
                   Kukku is a young Indian brand with one conviction: the herbs our families have trusted for
                   generations belong in modern pet care. We&apos;re launching small, honest, and transparent.{" "}
                   <strong className="text-[#0b4f35]">Our first customers become founding members</strong>

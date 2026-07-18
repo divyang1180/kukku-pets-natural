@@ -56,10 +56,10 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full flex flex-col">
       {/* Announcement Bar */}
-      <div className="bg-[#001f14] text-[#f0f5f1] py-2.5 px-4 text-center text-xs font-semibold tracking-wider flex items-center justify-center gap-2 shadow-inner">
+      <div className="bg-[#001f14] text-[#f0f5f1] py-2.5 px-4 text-center text-sm font-semibold tracking-wider flex items-center justify-center gap-2 shadow-inner">
         <Sparkles size={13} className="text-[#f5a623] animate-pulse" />
         <span>RepeatCare SALE: Subscribe &amp; Save 20% + FREE Shipping &amp; Free Gift!</span>
-        <span className="hidden md:inline-block bg-[#f5a623] text-[#001f14] text-[9px] px-1.5 py-0.5 rounded-full font-bold ml-1 animate-bounce">
+        <span className="hidden md:inline-block bg-[#f5a623] text-[#001f14] text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1 animate-bounce">
           ACTIVE
         </span>
       </div>
@@ -73,7 +73,7 @@ export default function Navbar() {
             <img 
               src="/images/logo.png" 
               alt="Kukku Pet Naturals" 
-              className="h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
+              className="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
             />
           </a>
 
@@ -149,7 +149,7 @@ export default function Navbar() {
             >
               <ShoppingBag size={20} />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#f5a623] text-[#001f14] text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">
+                <span className="absolute -top-1 -right-1 bg-[#f5a623] text-[#001f14] text-xs font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">
                   {cartCount}
                 </span>
               )}

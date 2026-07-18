@@ -23,7 +23,7 @@ export default function Product() {
           <div>
             <div className="eyebrow">The Product</div>
             <h2 className="section-title">Natural Dental Care, Made Simple</h2>
-            <p style={{ fontSize: "15px", color: "var(--text-soft)", marginBottom: "1.5rem", lineHeight: "1.75" }}>
+            <p style={{ fontSize: "16px", color: "var(--text-soft)", marginBottom: "1.5rem", lineHeight: "1.75" }}>
               No brushing. No stress. No chemicals. Just add Kukku Pets Natural to your dog’s water bowl and let nature handle daily oral hygiene — while they simply drink.
             </p>
             <div className="feature-list">

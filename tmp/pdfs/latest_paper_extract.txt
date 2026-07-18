@@ -1,0 +1,2317 @@
+
+---PAGE 1---
+DysRefine: Dysarthric Speech Correction using Tandem HMM-LLM
+guided Post-ASR Refinement
+Anonymous ACL submission
+Abstract001
+DYSREFINE is a hybrid framework designed002
+for dysarthric speech post-ASR corrections.003
+We used the Hidden Markov Model (HMM)004
+with language models containing fewer than 3B005
+parameters, where the HMM serves as the pri-006
+mary corrector by modelling token-level ASR007
+confusions. At the same time, the LLM pro-008
+vides contextual correction for context-level er-009
+rors. Proposed confidence-gating mechanisms010
+and hybrid selection of the DYSREFINE pre-011
+serve reliable corrections by avoiding unneces-012
+sary rewriting at both the token and context lev-013
+els. DYSREFINE achieves 5.80% WER on the014
+combined TORGO and UA-Speech test set, and015
+the Llama-3.2 configuration reaching 5.61%.016
+In zero-shot out-of-domain, DYSREFINE ob-017
+tains 12.90% WER on the in-house Dysarthric018
+English corpus, showing that the combination019
+of the HMM-lightweight contextual LMs effec-020
+tively improves the dysarthric post-ASR refine-021
+ment. An interactive demo is available at this022
+website.023
+1 Introduction024
+Neural Automatic Speech Recognition (ASR) has025
+evolved into an important component of language026
+technologies, supporting applications such as Assis-027
+tive communication tools, captioning, clinical doc-028
+umentation, and spoken dialogue systems. Recent029
+architectures, including WAV2VEC 2.0 (Baevski030
+et al., 2020), WHISPER (Radford et al., 2023),031
+CONFORMER (Gulati et al., 2020), and FAST CON-032
+FORMER (Rekesh et al., 2023), have achieved no-033
+table improvements on ASR benchmarks for nor-034
+mal speech. However, their performance remains035
+limited for dysarthric speech, where motor speech036
+impairments lead to atypical articulation, irregu-037
+lar prosody, prolonged pauses, and reduced intel-038
+ligibility (Hernandez et al., 2020). As illustrated039
+in Figure 1, acoustic and linguistic variations of-040
+ten lead to insertions, deletions, and substitutions041
+(IDS), as well as context-dependent recognition042
+Ground TruthPlease book a flight to Mumbai for next Tuesday morning.
+Hypothesis Text➕  Insertion Error Please book a flight up to Mumbai for next Tuesday morning. (Extra word)
+❌  Deletion Error Please book a flight to Mumbai next Tuesday morning. (Missing for)
+🔄  Substitution ErrorPlease book a fright to Mumbai for next Tuesday morning. (Acoustic swap)
+💯  Low ConfidenceFreeze brook a tight to Mumbai on for neck choose day morning. (Sentence confidence Score: 32%)
+📝  Context ErrorPlease book a fight to Mumbai for next Tuesday morning. (Grammatically fine, semantically impossible)
+ASR Hypothesis
+Transcript
+Corrected
+Transcript
+DysarthriFix: Post-ASR Correction Engine
+(Corrects ASR errors and improves low-confidence text)
+Figure 1: Overview of the proposed DYSREFINE ar-
+chitecture, a post-ASR correction engine for DASR
+that refines high-error ASR hypotheses into corrected,
+speaker-faithful transcripts.
+errors. These challenges make Dysarthric Auto- 043
+matic Speech Recognition (DASR) a persistent 044
+problem for inclusive natural language processing 045
+and speech technology (Hermann and Magimai.- 046
+Doss, 2021). 047
+This paper addresses post-ASR correction to 048
+improve transcript accuracy for dysarthric speech 049
+in English, while avoiding unnecessary rewriting 050
+(Udagawa et al., 2024; Zheng et al., 2026). Rather 051
+than retraining the full ASR system, post-ASR cor- 052
+rections operate on high-error ASR hypotheses and 053
+attempt to recover transcripts that better match the 054
+speaker’s intended utterance or reference transcript 055
+(Ma et al., 2025). These settings are practically im- 056
+portant because dysarthric speech data are limited, 057
+speaker variability is high, and existing ASR sys- 058
+tems often require manual annotations, e.g., sever- 059
+ity classification (Kim et al., 2008; Rudzicz et al., 060
+2012; Mustafa et al., 2014). 061
+The task is technically challenging for two rea- 062
+sons. (1) Dysarthric ASR (DASR) errors are het- 063
+erogeneous, some arise from local phonetic con- 064
+fusions, while others require sentence-level syn- 065
+tactic or semantic context (Sriranjani et al., 2015; 066
+Aboeitta et al., 2025). (2) Overcorrection in post- 067
+ASR correction can harm speaker-faithfulness by 068
+1
+
+---PAGE 2---
+replacing intended but uncommon words with more069
+probable alternatives (Yamashita et al., 2025). Ex-070
+isting statistical approaches, such as confusion071
+models or language model rescoring, can capture072
+frequent local errors and incorrect transcripts (Sri-073
+ranjani et al., 2015; Ma et al., 2025).074
+To address this gap, we propose DYSREFINE , a075
+HMM-LLM post-ASR error-correction approach,076
+inspired by ASR error-correction approaches (Ma077
+et al., 2025; Yamashita et al., 2025). The proposed078
+system first uses a Hidden Markov Model to cor-079
+rect high-error ASR hypothesis-to-reference map-080
+pings and generate confidence-aware corrections.081
+High-confidence spans are preserved, while low-082
+confidence spans are passed to an LLM for con-083
+textual refinement. A hybrid selector then chooses084
+among the raw ASR output, the HMM correction,085
+and the LLM-corrected transcript. The study is086
+guided by three research questions: RQ1: Can the087
+HMM model learn the DASR error patterns and088
+improve the raw ASR output without changing or089
+retraining the original ASR system? RQ2: Can090
+lightweight LoRA-adapted LLMs improve the cor-091
+rected transcript by fixing context-level semantic092
+errors that the HMM model cannot fully correct?093
+RQ3: Can confidence gating and hybrid selection094
+improve WER, CER, MER, and UEM while avoid-095
+ing changes to words that are already correct?096
+Contributions: Our contributions are as follows:097
+1. We develop dysarthric post-ASR correction as098
+a selective refinement task, which preserves099
+reliable transcript regions while correcting un-100
+certain tokens/context.101
+2. We introduce DYSREFINE , a hybrid frame-102
+work in which an HMM models recurrent103
+token-level ASR confusions, and lightweight104
+LMs (up to 3B parameters) resolve context-105
+level errors.106
+3. We propose confidence gating and validation-107
+tuned hybrid selection to prevent overcorrec-108
+tion and select among HMM, LM, and gated109
+candidates.110
+4. DYSREFINE improves the main combined-111
+test Qwen result from 15.39% WER for the112
+raw ASR output to 6.49% WER after correc-113
+tion, corresponding to a 57.8% relative reduc-114
+tion on the combined TORGO and UASpeech115
+test set. In the postprocess ablation setting,116
+the best hybrid selector obtains 7.16% WER,117
+while the HMM stage reaches 12.90% WER118
+in the zero-shot out-of-domain evaluation on119
+the in-house English dysarthric speech corpus.120
+5. We demonstrate that the sentence-level contex- 121
+tual correction is more effective than the iso- 122
+lated token-level correction. The best token- 123
+level WER is 28.13%, while the best context- 124
+level WER is 5.61%, signifying that broader 125
+semantic and syntactic context are critical for 126
+dysarthric post-ASR. 127
+The remainder of this paper is organised as fol- 128
+lows: Section 2 presents DYSREFINE , Section 3 129
+describes the experimental setup, Section 4 reports 130
+the results, and Section 5 concludes the paper. Ad- 131
+ditional details are provided in the appendices. 132
+2 Methodology 133
+2.1 Task Formulation 134
+We formulate dysarthric post-ASR correction as a 135
+text-to-text editing task that maps an ASR hypothe- 136
+sis to the intended transcript. Given an in-domain 137
+training set 138
+Did
+train = {(ai, ti)}N
+i=1, (1) 139
+an ASR model A produces a single-best hypothesis 140
+hi = A(ai), (2) 141
+which is paired with the reference transcript to form 142
+Hid
+train = {(hi, ti)}N
+i=1. (3) 143
+DYSREFINE addresses DASR errors through token- 144
+level HMM correction and confidence-guided 145
+context-level LLM refinement. The HMM models 146
+recurrent ASR-to-reference confusions and gener- 147
+ates an intermediate hypothesis, 148
+hhmm
+i = FHMM(hi). (4) 149
+Token-level confidence then determines whether 150
+each region is preserved, accepted from the HMM, 151
+or sent for contextual refinement. The LLM re- 152
+fines only uncertain regions to produce the final 153
+transcript, 154
+ˆti = FLLM(hhmm
+i ). (5) 155
+The objective is to reduce WER, CER, and MER 156
+while preserving reliable ASR spans and avoiding 157
+unnecessary edits. 158
+3 DysRefine: Confidence-Guided 159
+Selective Post-ASR Correction 160
+A multi-stage ASR post-correction framework, 161
+DYSREFINE uses statistical confusion modelling 162
+2
+
+---PAGE 3---
+with contextual neural corrections. For a given in-163
+put utterance ai, the ASR model generates a noisy164
+hypothesis hi = A(ai). An HMM first produces a165
+statistically corrected candidate ˜hi, which is subse-166
+quently refined by a LoRA-adapted LLM to obtain167
+ℓi, because neither component is uniformly reli-168
+able. As shown in Fig. 2, DYSREFINE uses the169
+token-level confidence gating to construct a gated170
+candidate gi, and a validation-tuned hybrid selec-171
+tor selects one complete sentence from the HMM,172
+the language model, and the gated candidates by173
+considering local confusion correction, contextual174
+refinement, confidence-based arbitration, and final175
+candidate selection.176
+For the i-th example, let hi,k and ti,k denote177
+the ASR and reference tokens at aligned position178
+k, respectively. Both sequences are converted to179
+lowercase and normalised into word tokens, where180
+word-level Levenshtein alignment is applied with181
+equal IDS costs to identify word matches and ASR-182
+to-reference error pairs,183
+(hi,k, ti,k) ∈ (V ∗ h ∪ ϵ) × (V ∗ t ∪ ϵ) . (6)184
+where ϵ denotes an empty token. Equal non-empty185
+tokens represent matches, whereas unequal non-186
+empty tokens represent substitutions. The pairs187
+(hi,k, ϵ) and (ϵ, ti,k) represent ASR insertions and188
+deletions, respectively. Insertions and deletions189
+are retained during alignment, but only non-empty190
+ASR–reference pairs contribute to the HMM cor-191
+rection counts. As shown in Table 1, each example192
+may have a penalty value of 0, 0.5, or 1, repre-193
+senting meaning-preserving, minor phonetic or or-194
+thographic, and major lexical errors, respectively.195
+These values are retained as descriptive metadata196
+for the dataset. They are not provided to the HMM,197
+the language model, the confidence function, or the198
+confidence-gating mechanism. The hybrid selector199
+instead uses the separate error-type and error-label200
+metadata fields.201
+HMM-based pre-correction: The first stage202
+maps the raw ASR hypothesis hi to an interme-203
+diate HMM-corrected sequence ˜hi:204
+˜hi = FHMM(hi). (7)205
+At position k, the observed variable xk represents206
+an ASR hypothesis. In contrast, the hidden can-207
+didate yk corresponds to the corrected token esti-208
+mated by the HMM, which combines a clean-word209
+ASR Hypothesis
+(tASR: I heard the word epishode)
+Finetuned ASR
+(Wav2Vec2,FastConformer)
+(epishode→episode)
+Incorrect-correct
+pair creation
+(epishode→episode, 0.5)
+Penalty Labeling
+ 0.0: No penalty (correct
+prediction)
+ 0.5: minor penalty (partial
+phonetic mismatch)
+ 1.0: major penalty
+(significant lexical or
+semantic error)
+For trainingFor trainingFor InferenceFor Inference
+Word to sentence expansion
+(I heard the word epishode→I heard the word episode, 0.5)
+testvaltrain
+Stratified Speaker
+Independent Split (70|10|20)
+Confidence
+Score
+LLM Hypothesis
+(tLLM: I heard the
+word episode)
+Confidence gating
+Corrected Transcript
+( t ref: I heard the word episode)
+HMM
+Precorrection
+HMM
+train
+HMM
+val
+HMM
+test
+n-gram
+n=1, 2, ...
+LLM
+prediction
+LoRA Finetuning
+(for α=0.5, 1, 1.5, ... , 2.5)
+HMM Hypothesis
+(tHMM: I heard the
+word episode)
+Transcript:
+tref: I heard the
+word episode.
+Hybrid Selector
+tHMM tASR
+Figure 2: Overview of DYSREFINE . Training aligns
+speaker-independent ASR hypotheses with references
+to derive word-confusion pairs for HMM estimation
+and sentence examples for LoRA-adapted correction.
+During inference, confidence-guided routing preserves
+reliable ASR–HMM spans, sends unresolved regions
+to the LLM, and a hybrid selector chooses the final
+transcript. References are excluded at inference.
+bigram language model with a noisy-to-clean cor- 210
+rection distribution. Where the bigram probability 211
+is estimated as, 212
+PLM(yk | yk−1) = Cbi(yk−1, yk) + αLM
+Cuni(yk−1) + αLM|V| . (8) 213
+Here, V denotes the clean-word lexicon andαLM = 214
+0.1 is the additive smoothing coefficient. For the 215
+initial state y0 = ⟨s⟩, the denominator uses the 216
+total number of clean training tokens instead of the 217
+unigram count of the start symbol. The noisy-to- 218
+clean correction probability is estimated from the 219
+aligned ASR–reference word pairs: 220
+Pcorr(yk | xk) = Cemit(xk, yk) + αcorrX
+z∈V
+Cemit(xk, z) + αcorr|V|
+.
+(9) 221
+The correction smoothing coefficient is applied to 222
+avoid zero probabilities during ASR-to-reference 223
+word mappings. Furthermore, identity counts are 224
+added to self-mapping pairs (w, w) to recognise 225
+the tokens, are more likely to be preserved. During 226
+decoding, the HMM considers the top correction 227
+candidates for each observed ASR token, while re- 228
+taining the original ASR word as a fallback. Beam- 229
+search decoding then produces the final HMM- 230
+corrected sequence: 231
+3
+
+---PAGE 4---
+˜hi = arg max
+y1:Li
+LiX
+k=1
+h
+log PLM(yk | yk−1)
++ λ log Pcorr(yk | xk)
+i
+.
+(10)232
+Here, Li denotes the number of words in the in-233
+put sequence, y0 = ⟨s⟩, and λ = 2.0 controls the234
+contribution of the noisy-to-clean correction prob-235
+ability. In the case of an unseen observed ASR236
+word during HMM training, the candidate set con-237
+tains only the original word. Hence, HMM corrects238
+recurrent local confusions by restricting baseless239
+modifications.240
+Contextual language-model refinement: Sec-241
+ond stage maps the complete HMM-corrected se-242
+quence to a contextually refined candidate:243
+ℓi = FLLM(˜hi). (11)244
+QWEN 2.5-I NSTRUCT and LLAMA -3.2 , ˜hi are245
+placed in an instruction prompt, while request-246
+ing contextual ASR correction to preserve the in-247
+tended meaning. Prompt tokens are masked dur-248
+ing training; hence, only the reference-output to-249
+kens contribute to the causal language-model loss.250
+For BYT5, the HMM-corrected sequence is pro-251
+vided through a sequence-to-sequence (seq2seq)252
+approach.253
+LLMs are fine-tuned using LoRA while keeping254
+the pretrained parameters frozen. During infer-255
+ence, they use deterministic greedy decoding to256
+generate complete sentence-level corrections, with-257
+out enforcing token preservation during generation.258
+Where the subsequent confidence-gating mecha-259
+nism controls changes to unsupported language260
+models.261
+HMM-derived confidence estimation: The raw262
+ASR, HMM, and language-model sequences are263
+aligned at the word level. For the raw ASR word264
+hi,k and its aligned HMM word ˜hi,k, the total num-265
+ber of observed noisy-to-clean mappings is:266
+Ni,k =
+X
+z∈V
+Cemit(hi,k, z). (12)267
+When Ni,k > 0, the relative correction probability268
+is269
+fi,k = min
+
+
+1,
+log
+h
+1 + Cemit
+
+hi,k, ˜hi,k
+i
+log 21
+
+
+ . (13)270
+The relative probability and absolute frequency are 271
+combined as, 272
+ci,k =
+
+
+
+0, ˜hi,k = ϵ,
+0.95, h i,k = ˜hi,k,
+0.20, N i,k = 0,
+min {0.95, max {0.05, si,k}} , otherwise.
+(14) 273
+An empty HMM alignment receives zero con- 274
+fidence. Exact agreement between the ASR 275
+and HMM words receives a confidence of 0.95, 276
+whereas an unseen noisy-to-clean mapping receives 277
+a confidence of 0.20. All remaining correction 278
+scores are restricted to the interval [0.05, 0.95]. 279
+Token-level confidence gating: The gated out- 280
+put is built using HMM sequence. Let ℓi,k be 281
+the language-model word aligned with ˜hi,k. The 282
+HMM–LLM sentence-level change ratio is: 283
+ρi =
+Dword
+
+˜hi, ℓi
+
+max
+n
+1, |˜hi|, |ℓi|
+o . (15) 284
+Here, Dword(·, ·) and | · | indicate the word-level 285
+edit distance, and the number of words in a se- 286
+quence, respectively. Completely, we defined the 287
+gating rule as follows: To express the gating rule 288
+compactly, HMM-preservation condition as be- 289
+comes: 290
+Pi,k ≡
+
+hi,k = ˜hi,k
+
+∨ (ci,k ≥ τ )
+∨
+
+ℓi,k ∈
+n
+ϵ, ˜hi,k
+o
+∨ [(ρi > γ ) ∧ (ci,k > τ /2)] .
+(16) 291
+The gated word is then selected as, 292
+gi,k =
+(˜hi,k, Pi,k,
+ℓi,k, otherwise.
+(17) 293
+The preservation rules maintain ASR–HMM agree- 294
+ments, high-confidence HMM corrections, and 295
+cases where the LLM proposes empty or redundant 296
+edits. They prevent the aggressive LLM rewriting 297
+when the HMM remains moderately reliable. Oth- 298
+erwise, the aligned LLM token will be accepted, 299
+and the gated sentence will formed by concatenat- 300
+ing the selected words: 301
+gi = gi,1 ⊕ gi,2 ⊕ · · · ⊕ gi,Li. (18) 302
+Here, ⊕ denotes whitespace concatenation. The 303
+gate operates directly over the HMM word se- 304
+quence without span merging. Therefore, LLM 305
+insertions at empty HMM positions are discarded. 306
+4
+
+---PAGE 5---
+The thresholds τ and γ are tuned on 1000 valida-307
+tion examples:308
+(τ ∗, γ∗) = arg min
+τ ∈T
+γ∈G
+WERval(τ, γ). (19)309
+We used the validation CER to break ties between310
+configurations with identical validation WER. The311
+candidate parameter sets are:312
+T = {0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85} ,
+G = {0.20, 0.35, 0.50} . (20)313
+Metadata-conditioned hybrid selection: Af-314
+ter confidence gating, DYSREFINE keeps three315
+sentence-level candidates:316
+Zi =
+
+zHMM
+i , zLLM
+i , zGate
+i
+	
+. (21)317
+Where, candidate sequences can be defined as:318
+zHMM
+i = ˜hi, z LLM
+i = ℓi, z Gate
+i = gi. (22)319
+Let ui and vi denote the error-type and error-label320
+metadata associated with example i, respectively.321
+The corresponding metadata class become322
+mi = (ui, vi). (23)323
+A metadata-conditioned policy maps each class to324
+one candidate system:325
+πθ(mi) ∈ {HMM, LLM, Gate} . (24)326
+Let Π denote the set of possible metadata-to-system327
+assignment policies. The selected policy minimises328
+validation WER:329
+π∗
+θ = arg min
+πθ∈Π
+WERval(πθ). (25)330
+Among policies with identical validation WER, the331
+policy with the lowest validation CER is main-332
+tained. The final transcript is selected as333
+ˆti = z
+π∗
+θ(mi)
+i . (26)334
+The confidence gate performs word-level cor-335
+rection, while the hybrid selector chooses one336
+sentence-level candidate. Based on validation data337
+and applied reference-free at test time, the policy338
+will be learned and remains metadata-conditioned339
+unless error attributes are predicted during infer-340
+ence. The complete DYSREFINE pipeline is sum-341
+marised as,342
+ai
+A
+− →hi
+FHMM
+− − − − →˜hi
+FLLM
+− − − − →ℓi
+Gate
+− − − →gi
+Sπ∗
+θ
+− − →ˆti. (27)343
+DYSREFINE consequently integrates recurrent344
+confusion modelling, contextual sentence correc-345
+tion, word-level reliability control, and sentence-346
+level candidate selection while reducing unneces-347
+sary modifications to reliable ASR content.348
+4 Experiments 349
+Experiments are performed on two standard 350
+dysarthric speech datasets, TORGO (Rudzicz et al., 351
+2012) and UA-Speech (Kim et al., 2008), and 352
+an in-house English dysarthric corpus for out-of- 353
+distribution evaluation (OOD). Three open-source 354
+LLMs were used to evaluate the effectiveness of 355
+LLM-based post-ASR correction for dysarthric 356
+speech. The selected models include two decoder- 357
+only instruction-tuned LLMs and one byte-level 358
+encoder–decoder model. Specifically, we use 359
+QWEN 2.5-I NSTRUCT (Hui et al.), LLAMA -3.2 360
+(Touvron et al., 2023), andBYT5 (Xue et al., 2022). 361
+These models were selected to compare different 362
+architectural settings, including dense decoder-only 363
+generation and byte-level sequence-to-sequence 364
+correction. 365
+The primary model used in our experiments is 366
+QWEN 2.5-I NSTRUCT (Hui et al.), which is fine- 367
+tuned using LoRA-based parameter-efficient train- 368
+ing. This model consists of 36 transformer decoder 369
+layers, a hidden size of 3584, 16 attention heads, 370
+and a context length of 32k tokens. We use this 371
+model as the main post-ASR correction system be- 372
+cause of its strong instruction-following ability and 373
+relatively efficient parameter size. 374
+For comparison, we also evaluate LLAMA -3.2 375
+(3B; (Touvron et al., 2023)) as adecoder-only LLM 376
+to analyze the effect of a larger generative architec- 377
+ture on the ASR correction task. In addition, BYT5 378
+(Xue et al., 2022) is used as a byte-level encoder– 379
+decoder model to examine whether byte-level text 380
+modeling can better handle raw-ASR hypothesis 381
+outputs, spelling variations, and word-level distor- 382
+tions commonly observed in DASR. 383
+All models are fine-tuned on paired raw ASR hy- 384
+potheses and reference dysarthric transcripts. The 385
+ASR hypothesis serves as the input, while the ref- 386
+erence transcript represents the intended corrected 387
+transcription. Model training is performed using 388
+LoRA with cross-entropy loss (Park, 2026). The 389
+dataset was divided into speaker-independent train- 390
+ing, validation, and test subsets at 70%/10%/20% 391
+split, respectively. Each subset maintains a bal- 392
+anced distribution of word-level and sentence-level 393
+samples, as well as penalty labels (0, 0.5, 1). 394
+During inference, each model receives the ASR 395
+sentence, the HMM candidate, and the available 396
+linguistic context as input. The model is prompted 397
+to generate the corrected sentence while preserving 398
+the intended meaning and modifying only ASR- 399
+5
+
+---PAGE 6---
+Error type ASR output Ground truth / acceptable form Penalty
+Numerical phrase variation I have twenty five books I have 25 books 0
+Abbreviation variation He lives in the U S A He lives in the USA 0
+Compound-word variation She bought a note book She bought a notebook 0
+Acceptable spelling variation The color is bright The colour is bright 0
+Contraction variation I do not know the answer I don’t know the answer 0
+Small spelling error She drank cofee in the morning She drank coffee in the morning 0.5
+Minor phonetic mismatch He went to the libary He went to the library 0.5
+Minor grammatical error The boy walk to school The boy walks to school 0.5
+Minor plural mismatch She has two cat She has two cats 0.5
+Incorrect word substitution Put the book on the cable Put the book on the table 1
+Meaning-changing spelling error He lost his hart He lost his hat 1
+Significant word omission The girl drinking water The girl is drinking water 1
+Significant word insertion He went to to school early He went to school early 1
+Word reordering changing meaning The dog chased the boy The boy chased the dog 1
+Table 1: Representative English ASR error types used for dysarthric post-ASR correction. Underlined tokens
+indicate the mismatched or corrected spans. Lower to higher meaning-changing errors receive the full penalty.
+related errors. The complete instruction template400
+is provided in Appendix H. This setup allows us to401
+evaluate whether LLMs can effectively use contex-402
+tual and HMM-based cues to improve post-ASR403
+correction performance for dysarthric speech.404
+4.1 Experimental Setup and Model405
+Configurations406
+All experiments were performed on a desktop work-407
+station running Ubuntu 22.04 LTS with Python408
+3.10. The system is configured with an 11th-409
+generation Intel Core i7 processor, 16 GB RAM,410
+and an NVIDIA TITAN X GPU with 12 GB of411
+VRAM (approximately 11 TFLOPS at FP32 nu-412
+merical precision). We used PyTorch 2.1.2, scikit-413
+learn 1.7.2 for experiments, and jiwer python pack-414
+ages.We used TORGO (Rudzicz et al., 2012) and415
+UA-Speech (Kim et al., 2008) for in-domain exper-416
+iments and evaluated DYSREFINE on an in-house417
+English dysarthric corpus for out-of-domain (OOD)418
+evaluation. Dataset descriptions, and preprocessing419
+procedures are provided in Appendix C.420
+Model Configuration. DYSREFINE combines neu-421
+ral ASR models, an HMM-based statistical correc-422
+tor, and LoRA-adapted neural text-correction mod-423
+els.424
+Wav2vec 2.0 (Baevski et al., 2020) and FastCon-425
+former (Rekesh et al., 2023) are used to generate426
+the raw dysarthric-speech hypotheses. Additional427
+architecture details and comparisons are provided428
+in Appendix E.429
+HMM (Rabiner, 1989) is a probabilistic post-ASR430
+correction model that captures token-level ASR431
+confusion patterns between raw-ASR hypotheses432
+and ground-truth transcripts, guided by confidence433
+gating to handle recurring DASR error patterns.434
+Qwen2.5-Instruct (3B; (Hui et al.)) is the default 435
+LLM-corrector for confidence-gated post-ASR cor- 436
+rections. It is a decoder-only causal transformer 437
+with approximately 3B parameters with tied embed- 438
+dings and grouped query attention. Based on the 439
+confidence, it performs minimal corrections in low- 440
+confidence regions to avoid unnecessary rewriting. 441
+Llama-3.2 (3B; (Touvron et al., 2023)) is a 442
+decoder-only LLM baseline for contextual post- 443
+ASR correction. It is an autoregressive transformer 444
+model with about 3B parameters that uses super- 445
+vised instruction-tuning, base fine-tuning, and pref- 446
+erence alignment. In our framework, it allows for 447
+comparison with QWEN 2.5-I NSTRUCT for mini- 448
+mal contextual correction of low-confidence ASR 449
+outputs. 450
+ByT5 (300M; (Xue et al., 2022)) is used as an 451
+encoder-decoder model that processes text directly 452
+at the raw UTF-8 byte level. Since DASR errors 453
+often appear as spelling noise, rare-word substi- 454
+tution, and partial-word distortion, the byte-level 455
+encoder-decoder model is suitable for fine-grained 456
+correction of HMM- and LLM-generated hypothe- 457
+ses. 458
+5 Results and Discussion 459
+We evaluated the proposed post-ASR correction 460
+framework on DASR benchmarks, using UA- 461
+Speech and TORGO for in-domain evaluation and 462
+in-house English dysarthric speech corpora for 463
+zero-shot out-of-distribution testing (Kim et al., 464
+2008; Rudzicz et al., 2012). Performance is mea- 465
+sured using WER (Jurafsky and Martin, 2026), 466
+CER (SpeechBrain, 2024), MER (Morris et al., 467
+2004), and UEM, with details of the evaluation 468
+measures provided in Appendix E. Lower values 469
+6
+
+---PAGE 7---
+Method Dataset ASR Model LLM / Corrector WER (↓) CER (↓) MER (↓) UEM (↑)
+External Baselines
+Baseline 1: SAP-Hypo5
+(Zheng et al., 2026) {
+SAP-Hypo5
+}
+{
+Whisper
+} {
+QWEN 2-7B
+QWEN 3-8B
+LLAMA-2-7B
+LLAMA -3.1-8B }
+– – – –
+– – – –
+– – – –
+– – – –
+Baseline 2: Whisper-Vicuna
+(Aboeitta et al., 2025) {
+UA-Speech
+TORGO } { VICUNA
+} 33.68 27.49 29.60 45.97
+Proposed Controlled Systems
+System 1: ASR Hypothesis
+{
+UA-Speech
+TORGO } {
+FastConformer
+Wav2Vec2 } {
+QWEN 2.5
+LLAMA -3.2
+BYT5 }
+17.55 13.42 17.23 26.32
+System 2: System 1 + HMM 7.80 7.72 7.50 67.29
+System 3: System 2 + LLM 6.68 6.76 6.68 70.47
+System 6: System 3 + LoRA 5.80 5.56 5.80 70.47
+Table 2: Comparison of DYSREFINE with DASR baselines. External baselines and proposed controlled systems
+are explicitly separated. Scores are reported as percentages (%); the best proposed results are highlighted in green.
+Systems 1 are further analyzed in the ablation study.
+Figure 3: Performance comparison between the pro-
+posed 300M–3B correction models and larger baseline
+systems exceeding 8B parameters. After (Aboeitta et al.,
+2025), (Zheng et al., 2026)
+indicate better performance for WER, CER, and470
+MER, while higher UEM indicates more complete471
+utterance-level matches.472
+Table 2 compares the proposed correction473
+pipeline with previously reported DASR baselines474
+and separates our internal variants from external475
+systems. S4P-H YPO 5 (Zheng et al., 2026) uses476
+WHISPER (Radford et al., 2023) with multiple477
+LLM correctors and reports 11.78% WER. Since478
+these external systems differ in their ASR back-479
+bones, dataset settings, and evaluation protocols,480
+they are used only as reference baselines rather481
+than as strict 1:1 comparisons.482
+Under the main combined-test setting, the raw483
+ASR hypothesis in System 1 obtains 15.39 WER,484
+12.24 CER, 15.26 MER, and 26.32 UEM. Adding485
+the HMM -based correction layer in System 2 re-486
+duces WER to 6.99 and improves UEM to 67.29,487
+showing that many recurring dysarthric ASR er-488
+rors can be corrected with a statistical confusion489
+model. System 3 reports the best new Qwen LoRA490
+rerun from the current alpha sweep, reaching 6.52491
+WER, 6.26 CER, and 6.51 MER at λ = 0.5. The492
+best available main Qwen result is System 4, the493
+λ = 2.0 LoRA configuration, which obtains 6.49494
+WER, 5.41 CER, and 6.48 MER. Since the UEM495
+value for this best-known row is not present in the496
+experiment summary, we leave it unreported rather 497
+than copying a value from a different evaluation 498
+table. 499
+5.1 Post-ASR Correction Analysis 500
+Token-Level Post-ASR Correction Results are 501
+reported with different LoRA scaling configura- 502
+tions in Table 3. Among the evaluated models, 503
+namely, QWEN 2.5-I NSTRUCT (Yang et al., 2025), 504
+LLAMA -3.2 (Grattafiori et al., 2024), and BYT5 505
+(Xue et al., 2022), BYT5 achieves the strongest 506
+token-level performance, obtaining 28.13 WER, 507
+20.85 CER, 28.13 MER, and 71.88 UEM. This 508
+result aligns well with the byte-level formulation 509
+of BYT5, which supports fine-grained character- 510
+level correction, e.g., recgnition → recognition, 511
+and subword-level correction, e.g., recogn ition → 512
+recognition. QWEN 2.5-I NSTRUCT shows higher 513
+sensitivity to the LoRA scaling factor, with its best 514
+token-level result obtained at α/r = 0.5. 515
+Model λ α WER (↓) CER ( ↓) MER ( ↓) UEM ( ↑)
+QWEN2.5-INSTRUCT
+0.5 4 29.69 30.78 29.69 70.31
+1.0 8 34.38 36.19 34.38 65.63
+1.5 12 35.16 36.77 35.16 64.84
+2.0 16 – – – –
+2.125 17 35.94 37.18 35.94 64.06
+LLAMA-3.2
+0.5 4 29.69 21.56 29.69 70.31
+1.0 8 29.69 21.56 29.69 70.31
+1.5 12 29.69 21.56 29.69 70.31
+2.0 16 29.69 21.56 29.69 70.31
+2.125 17 29.69 21.56 29.69 70.31
+BYT5
+0.5 4 28.13 20.85 28.13 71.88
+1.0 8 28.13 20.85 28.13 71.88
+1.5 12 28.13 20.85 28.13 71.88
+2.0 16 28.13 20.85 28.13 71.88
+2.125 17 28.13 20.85 28.13 71.88
+Table 3: Token-level post-ASR correction across LoRA
+scaling configurations. Scores are reported in percent-
+ages (%), with the best configuration for each LLM high-
+lighted in green. For tied scores, we choose the smallest
+(λ) and (α) to preserve performance while minimizing
+LoRA scaling and updates. Unavailable split-level cells
+are marked with –.
+In contrast, LLAMA -3.2 and BYT5 remain 516
+nearly unchanged across scaling values, suggesting 517
+that token-level correction for these models is less 518
+7
+
+---PAGE 8---
+affected by LoRA scaling strength. These token-519
+level scores are reported as diagnostic results over520
+isolated correction examples and should not be in-521
+terpreted as directly comparable to full-sentence522
+corpus WER.523
+Context-Level Post-ASR Correction. Sentence-524
+level correction is reported in Table 4. At the sen-525
+tence/context level, LLAMA -3.2-I NSTRUCT gives526
+the best overall result at α/r = 2.125, with 5.61527
+WER, 5.42 CER, 5.61 MER, and 70.47 UEM. For528
+the Qwen rows available in the current split-level529
+alpha summary, QWEN 2.5-I NSTRUCT performs530
+best by WER and MER at α/r = 0 .5, while its531
+best CER is obtained at α/r = 2.125. The sepa-532
+rate main combined-test Qwen result at α/r = 2.0533
+is reported in Table 2; it is not reused as a sentence-534
+only split result. Because the token-level table535
+evaluates isolated diagnostic examples and this ta-536
+ble evaluates complete utterances, the token-level537
+WER should not be compared directly with the538
+sentence-level WER.539
+Model λ α WER (↓) CER ( ↓) MER ( ↓) UEM ( ↑)
+QWEN2.5-INSTRUCT
+0.5 4 6.33 6.12 6.33 66.90
+1.0 8 6.36 6.12 6.35 66.77
+1.5 12 6.40 6.21 6.40 66.58
+2.0 16 6.26 6.11 6.26 67.23
+2.125 17 6.35 6.06 6.35 66.81
+LLAMA-3.2
+0.5 4 5.73 5.54 5.72 70.02
+1.0 8 5.69 5.48 5.69 70.12
+1.5 12 5.68 5.47 5.68 70.12
+2.0 16 5.66 5.47 5.66 70.21
+2.125 17 5.61 5.42 5.61 70.47
+BYT5
+0.5 4 6.83 6.51 6.78 67.10
+1.0 8 6.83 6.51 6.77 67.10
+1.5 12 6.78 6.47 6.73 67.10
+2.0 16 6.72 6.40 6.67 67.20
+2.125 17 6.75 6.43 6.70 67.16
+Table 4: Context-level post-ASR correction using LoRA
+scaling. Evaluation scores are in percentages (%). Opti-
+mum values are highlighted in green.
+5.2 Zero-shot Generalization to Unseen540
+Datasets541
+Zero-shot generalization is important for dysarthric542
+ASR because speech impairments vary substan-543
+tially across speakers, severity levels, and recording544
+conditions, making it difficult to collect sufficient545
+target-domain data for every speaker. To assess this546
+capability, we evaluate the correction pipeline on547
+an unseen in-house English dysarthric dataset with-548
+out additional fine-tuning, with results reported in549
+Table 5.550
+The raw ASR output achieves 20.43 WER, 14.84551
+CER, 20.43 MER, and 36.67 UEM, indicating a552
+clear domain shift from the in-domain evaluation553
+settings. Upon applying the HMM corrections,554
+WER decreases significantly from 20.43 to 12.90,555
+and CER decreases from 14.87 to 8.63, while UEM 556
+increases from 36.67 to 66.67. This suggests that 557
+the HMM generalized effectively by capturing sys- 558
+tematic ASR confusion patterns rather than relying 559
+on target-domain memorization. However, neural 560
+refinement through the LLMs (QWEN 2.5, LLAMA - 561
+3.2, and BYT5) introduces marginal gains or even 562
+performance degradation in this out-of-domain set- 563
+ting. This indicates that the LLM component’s 564
+robustness must be stated cautiously; while statis- 565
+tical HMM modeling generalizes steadily across 566
+domains, generative LLMs are highly susceptible 567
+to over-correction and hallucination under severe 568
+domain shifts. 569
+5.3 Ablation Study of Confidence Gating and 570
+Hybrid Selection 571
+The ablation study in Table 6 evaluates confidence 572
+gating and hybrid selection in the postprocess 573
+combined-test setting. At λ = 2.125 and α = 17, 574
+the confidence-gated variant obtains 7.72 WER, 575
+7.58 CER, 7.43 MER, and 67.38 UEM. Adding the 576
+hybrid selector improves the result to 7.16 WER, 577
+7.17 CER, 7.12 MER, and 68.60 UEM. This shows 578
+that confidence gating alone is useful but not suffi- 579
+cient; the final output still benefits from selecting 580
+among the HMM, LLM, and gated candidates. 581
+5.4 Discussion 582
+While our framework leverages established tech- 583
+nologies, combining HMMs with LoRA-adapted 584
+LLMs, the overall contribution is biased toward 585
+effective engineering integration rather than stan- 586
+dalone algorithmic innovation. Our findings clearly 587
+indicate that the primary driver of performance 588
+improvement is the HMM module, which single- 589
+handedly reduces the raw WER from 17.55 to 7.80. 590
+The LLM error correction provides a much smaller, 591
+albeit valuable, secondary contextual refinement. 592
+In order to understand the behaviour of differ- 593
+ent models in the quantitative results, we conduct 594
+a qualitative analysis of the representative word 595
+and context-level correction outputs as shown in 596
+Table 7. It clarifies how different correction stages 597
+handle local lexical errors, context-level seman- 598
+tic recovery, and the preservation of correct ASR 599
+hypotheses. HMM is effective for local ASR con- 600
+fusions but remains conservative in context-level 601
+recovery. QWEN 2.5-I NSTRUCT and LLAMA -3.2 602
+offer stronger sentence-level reconstruction, while 603
+BYT5 is better at overall fine-grained token-level 604
+repair. 605
+8
+
+---PAGE 9---
+LLM Stage WER ( ↓) CER ( ↓) MER ( ↓) UEM ( ↑) Hits ( ↑) Sub. ( ↓) Del. ( ↓) Ins. ( ↓)
+QWEN2.5-INSTRUCT
+Raw ASR 20.43 14.87 20.43 36.67 148 37 1 0
++ HMM 12.90 8.62 12.90 66.67 162 23 1 0
++ QWEN2.5-INSTRUCT+ LoRA 14.52 9.61 14.52 61.67 159 26 1 0
+LLAMA-3.2
+Raw ASR 20.43 14.87 20.43 36.67 148 37 1 0
++ HMM 12.90 8.62 12.90 66.67 162 23 1 0
++ LLAMA-3.2 + LoRA 13.44 9.71 13.44 66.67 161 22 3 0
+BYT5
+Raw ASR 20.43 14.87 20.43 36.67 148 37 1 0
++ HMM 12.90 8.62 12.90 66.67 162 23 1 0
++ BYT5 + LoRA 12.90 8.62 12.90 66.67 162 23 1 0
+Table 5: Zero-shot generalization to Out-of-Domain correction across the raw ASR, HMM , and neural correction
+stages. Optimum values are highlighted in green.
+Ablation Setting WER ( ↓) CER ( ↓) MER ( ↓) UEM ( ↑)
+System 5: Confidence-gated postprocess Qwen (λ = 2.125) 7.72 7.58 7.43 67.38
+System 6: System 5 + Hybrid Selector 7.16 7.17 7.12 68.60
+Table 6: Ablation results for confidence gating and hybrid selection in the postprocess combined-test setting.
+Evaluation measures are reported in percentages, and the best result is highlighted in green.
+Stage Token-level Input →Output Context-level Input→OutputHMM grin→green roltipoly→polyQWEN2.5-INSTRUCT/ LLAMA-3.2 green→green fath gosttave gostta fa fathom→fathomBYT5 e→seven roltipoly→poly
+Table 7: Representative token- and context-level correc-
+tion examples. Outputs highlighted in light red indicate
+erroneous or incomplete predictions, whereas outputs
+highlighted in light green indicate correct predictions.
+6 Summary and Conclusions606
+In this work, we introduced DYSREFINE , a selec-607
+tive Tandem HMM-LLM framework for post-ASR608
+correction of dysarthric speech. The method re-609
+sults show that HMM-based confusion modelling610
+effectively resolves token-level errors, while the611
+language model manages contextual errors through612
+semantic and syntactic recovery. Furthermore, the613
+ablation study reveals that standalone confidence614
+gating alone is insufficient, whereas hybrid candi-615
+date selection improves robustness by balancing616
+correction quality with the preservation of reliable617
+ASR content. Performance on the OOD corpus618
+indicates that the framework generalises effectively619
+beyond the low-resource dysarthric training data,620
+although domain mismatch remains challenging. In621
+short, DYSREFINE provides a practical, parameter-622
+efficient approach to improve DASR performance623
+without the explicit need to retrain the underlying624
+encode-decoder-based acoustic model, while re-625
+ducing unnecessary rewriting and overcorrection626
+errors.627
+Limitations and Future Work : The proposed628
+framework’s innovation relies heavily on engineer-629
+ing integration of existing tools rather than on novel630
+mathematical methods. Furthermore, the reported631
+improvements over external state-of-the-art base-632
+lines are constrained by differing ASR outputs and633
+splits, making a direct 1:1 comparison difficult. 634
+Finally, the LLM-based correction occasionally de- 635
+graded performance on out-of-domain data, high- 636
+lighting a vulnerability to domain shifts and hal- 637
+lucinations. This assistive post-ASR tool should 638
+not yet be considered a standalone clinical tool. In 639
+future, we will expand the benchmarking of the ap- 640
+proach by using multiple LLMs at different scales 641
+to measure trade-offs among accuracy, latency, and 642
+robustness to correction errors. 643
+Reproducibility and Artifacts : The imple- 644
+mentation, model configurations, training, and 645
+evaluation scripts will be released at https:// 646
+github.com/PostASR/DysRefine. To ensure 647
+complete reproducibility while respecting the 648
+sensitive nature of raw dysarthric speech, our 649
+anonymized repository will host full configu- 650
+ration files ( experiment_2_config.json), the 651
+MFA alignment scripts, and the exact data-split 652
+indexing keys. We also provide comprehensive in- 653
+structions and manifest formats for obtaining the 654
+original UA-Speech and TORGO datasets directly 655
+from their publishers. 656
+References 657
+A. Aboeitta, A. Sharshar, Y . Nafea, and S. Shehata. 2025. 658
+Bridging ASR and LLMs for dysarthric speech recog- 659
+nition: Benchmarking self-supervised and generative 660
+approaches. In INTERSPEECH, pages 2123–2127. 661
+Alexei Baevski, Yuhao Zhou, Abdelrahman Mohamed, 662
+and Michael Auli. 2020. wav2vec 2.0: A framework 663
+for self-supervised learning of speech representations. 664
+Advances in Neural Information Processing Systems 665
+(NeurIPS), 33:12449–12460. 666
+Abhishek Bhandari and Gaurav Harit. 2026. Post- 667
+9
+
+---PAGE 10---
+asr correction for low-resource rajasthani language.668
+ACM Transactions on Asian and Low-Resource Lan-669
+guage Information Processing.670
+Santiago Omar Caballero Morales and Stephen J Cox.671
+2009. Modelling errors in automatic speech recog-672
+nition for dysarthric speakers. EURASIP Jour-673
+nal on Advances in Signal Processing (EJASP) ,674
+2009(1):308340.675
+Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri,676
+Abhinav Pandey, Abhishek Kadian, Ahmad Al-677
+Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten,678
+Alex Vaughan, and 1 others. 2024. The llama 3 herd679
+of models. arXiv preprint arXiv:2407.21783. {Last680
+Accessed Date : May 25th, 2026}.681
+Anmol Gulati, James Qin, Chung-Cheng Chiu, Niki682
+Parmar, Yu Zhang, Jiahui Yu, Wei Han, Shibo683
+Wang, Zhengdong Zhang, Yonghui Wu, and 1 oth-684
+ers. 2020. Conformer: Convolution-augmented685
+transformer for speech recognition. arXiv preprint686
+arXiv:2005.08100. Last Accessed Date : May 25 th,687
+2026.688
+Enno Hermann and Mathew Magimai.-Doss. 2021.689
+Handling Acoustic Variation in Dysarthric Speech690
+Recognition Systems Through Model Combination.691
+In Proceedings of Interspeech, pages 4788–4792.692
+Abner Hernandez, Tomás Arias-Vergara, Andreas Maier,693
+and Paula Andrea Pérez-Toro. 2026. Confidence-694
+guided error correction for disordered speech recog-695
+nition. In ICASSP 2026-2026 IEEE International696
+Conference on Acoustics, Speech and Signal Process-697
+ing (ICASSP), pages 18447–18451. IEEE.698
+Abner Hernandez, Sunhee Kim, and Minhwa Chung.699
+2020. Prosody-based measures for automatic severity700
+assessment of dysarthric speech. Applied Sciences701
+(AS), 10(19).702
+Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan703
+Allen-Zhu, Yuanzhi Li, Shean Wang, Liang Wang,704
+Weizhu Chen, and 1 others. 2022. LoRA: Low-705
+rank adaptation of large language models. Inter-706
+national Conference on Learning Representations707
+(ICLR), 1(2):3.708
+Binyuan Hui, Jian Yang, Zeyu Cui, and Jiaxi Yang.709
+Qwen2. 5-coder technical report.710
+Daniel Jurafsky and James H. Martin. 2026. Speech711
+and Language Processing: An Introduction to Natu-712
+ral Language Processing, Computational Linguistics,713
+and Speech Recognition, with Language Models, 3rd714
+edition. Online manuscript released January 6, 2026.715
+Heejin Kim, Mark Hasegawa-Johnson, Adrienne Perl-716
+man, Jon R Gunderson, Thomas S Huang, Ken-717
+neth L Watkin, Simone Frame, and 1 others. 2008.718
+Dysarthric speech database for universal access re-719
+search. In INTERSPEECH, pp. 1741–1744.720
+Rishabh Kumar, Amrith Krishna, Ganesh Ramakrish- 721
+nan, and Preethi Jyothi. 2026. Post-asr correction 722
+in hindi: Comparing language models and large lan- 723
+guage models in low-resource scenarios. In Proceed- 724
+ings of the 19th Conference of the European Chapter 725
+of the Association for Computational Linguistics (Vol- 726
+ume 2: Short Papers), pages 636–645. 727
+Yichong Leng, Xu Tan, Wenjie Liu, Kaitao Song, Rui 728
+Wang, Xiang-Yang Li, Tao Qin, Ed Lin, and Tie- 729
+Yan Liu. 2023. Softcorrect: Error correction with 730
+soft detection for automatic speech recognition. In 731
+Proceedings Of The AAAI Conference On Artificial 732
+Intelligence, volume 37, pages 13034–13042. 733
+Michael Levit, Shuangyu Chang, Bruce Buntschuh, and 734
+Nick Kibre. 2012. End-to-end speech recognition 735
+accuracy metric for voice-search tasks. In IEEE In- 736
+ternational Conference on Acoustics, Speech and 737
+Signal Processing (ICASSP), pages 5141–5144. 738
+Sheng Li, Chen Chen, Chin Yuen Kwok, Chenhui Chu, 739
+Eng Siong Chng, and Hisashi Kawai. 2024. In- 740
+vestigating asr error correction with large language 741
+model and multilingual 1-best hypotheses. In INTER- 742
+SPEECH, pages 1315–1319. 743
+Rao Ma, Mengjie Qian, Mark Gales, and Kate Knill. 744
+2025. Asr error correction using large language mod- 745
+els. IEEE Transactions on Audio, Speech and Lan- 746
+guage Processing (TASLP), 33:1389–1401. 747
+Kinfe Tadesse Mengistu and Frank Rudzicz. 2011. 748
+Comparing humans and automatic speech recog- 749
+nition systems in recognizing dysarthric speech. 750
+In Canadian Conference on Artificial Intelligence , 751
+pages 291–300. Springer. 752
+Andrew C. Morris, Viktoria Maier, and Phil Green. 2004. 753
+From WER and RIL to MER and WIL: Improved 754
+evaluation measures for connected speech recogni- 755
+tion. In INTERSPEECH, pages 2765–2768. 756
+Mumtaz Begum Mustafa, Siti Salwah Salim, Noraini 757
+Mohamed, Bassam Al-Qatab, and Chng Eng Siong. 758
+2014. Severity-based adaptation with limited data for 759
+asr to aid dysarthric speakers. PLOS ONE, 9(1):1– 760
+11. 761
+Juneyoung Park. 2026. Rethinking the rank 762
+threshold for lora fine-tuning. arXiv preprint 763
+arXiv:2605.03724. Last Accessed Date : May 25 th, 764
+2026. 765
+Lawrence R Rabiner. 1989. A tutorial on hidden markov 766
+models and selected applications in speech recogni- 767
+tion. Proceedings of the IEEE, 77(2):257–286. 768
+Alec Radford, Jong Wook Kim, Tao Xu, Greg Brock- 769
+man, Christine McLeavey, and Ilya Sutskever. 2023. 770
+Robust speech recognition via large-scale weak su- 771
+pervision. In International conference on machine 772
+learning (ICML), pages 28492–28518. PMLR. 773
+10
+
+---PAGE 11---
+Dima Rekesh, Nithin Rao Koluguri, Samuel Kriman,774
+Somshubra Majumdar, Vahid Noroozi, He Huang,775
+Oleksii Hrinchuk, Krishna Puvvada, Ankur Kumar,776
+Jagadeesh Balam, and 1 others. 2023. Fast conformer777
+with linearly scalable attention for efficient speech778
+recognition. In 2023 IEEE Automatic Speech Recog-779
+nition and Understanding Workshop (ASRU), pages780
+1–8. IEEE.781
+Hannah P Rowe, Sarah E Gutz, Marc F Maffei, Katrin782
+Tomanek, and Jordan R Green. 2022. Characterizing783
+dysarthria diversity for automatic speech recognition:784
+A tutorial from the clinical perspective. Frontiers in785
+computer science(FCS), 4:770210.786
+Frank Rudzicz, Aravind Kumar Namasivayam, and787
+Talya Wolff. 2012. The TORGO database of acoustic788
+and articulatory speech from speakers with dysarthria.789
+Language Resources and Evaluation, Vol. 46(4), pp.790
+523-541.791
+Rithik Sachdev, Zhong-Qiu Wang, and Chao-Han Huck792
+Yang. 2025. Evolutionary prompt design for llm-793
+based post-asr error correction. In 2025 IEEE Work-794
+shop on Signal Processing Systems (SIPS), pages 1–5.795
+IEEE.796
+SpeechBrain. 2024. Metrics for speech recognition.797
+https://speechbrain.readthedocs.io/en/798
+v1.0.3/tutorials/tasks/asr-metrics.html.799
+Accessed: 2026-05-11.800
+R. Sriranjani, S. Umesh, and M. Ramasubba Reddy.801
+2015. Pronunciation adaptation for disordered802
+speech recognition using state-specific vectors of803
+phone-cluster adaptive training. In Proceedings804
+of Workshop on Speech and Language Processing805
+for Assistive Technologies 2015: 6th Workshop on806
+Speech and Language Processing for Assistive Tech-807
+nologies, pages 72–78.808
+Zhiyuan Tang, Dong Wang, Zhikai Zhou, Yong Liu,809
+Shen Huang, and Shidong Shang. 2026. Chain of810
+correction for full-text speech recognition with large811
+language models. In ICASSP 2026-2026 IEEE Inter-812
+national Conference on Acoustics, Speech and Signal813
+Processing (ICASSP), pages 19227–19231. IEEE.814
+Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier815
+Martinet, Marie-Anne Lachaux, Timothee Lacroix,816
+Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal817
+Azhar, and 1 others. Llama: Open and efficient foun-818
+dation language models.819
+Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier820
+Martinet, Marie-Anne Lachaux, Timothée Lacroix,821
+Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal822
+Azhar, and 1 others. 2023. Llama: Open and effi-823
+cient foundation language models. arXiv preprint824
+arXiv:2302.13971. {Last Accessed Date: May 25 th,825
+2026}.826
+Takuma Udagawa, Masayuki Suzuki, Masayasu Mu-827
+raoka, and Gakuto Kurata. 2024. Robust ASR error828
+correction with conservative data filtering. In Pro- 829
+ceedings of the 2024 Conference on Empirical Meth- 830
+ods in Natural Language Processing: Industry Track, 831
+pages 256–266. Association for Computational Lin- 832
+guistics. 833
+Hangyi Wen, Mikiyas Assefa, Anas Semsayan, and 834
+Eduardo Feo-Flushing. 2026. Llm-based post-asr 835
+error correction for disordered speech. In ICASSP 836
+2026-2026 IEEE International Conference on Acous- 837
+tics, Speech and Signal Processing (ICASSP), pages 838
+17672–17676. IEEE. 839
+Linting Xue, Aditya Barua, Noah Constant, Rami Al- 840
+Rfou, Sharan Narang, Mihir Kale, Adam Roberts, 841
+and Colin Raffel. 2022. ByT5: Towards a token-free 842
+future with pre-trained byte-to-byte models. Transac- 843
+tions of the Association for Computational Linguis- 844
+tics (TACL), 10:291–306. 845
+N. Yamashita, M. Yamamoto, H. Kokubo, and 846
+Y . Kawaguchi. 2025. LLM-based generative error 847
+correction for rare words with synthetic data and pho- 848
+netic context. In INTERSPEECH, pages 3653–3657. 849
+An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, 850
+Binyuan Hui, Bo Zheng, Bowen Yu, Chang 851
+Gao, Chengen Huang, Chenxu Lv, and 1 others. 852
+2025. Qwen3 technical report. arXiv preprint 853
+arXiv:2505.09388. 854
+Chao-Han Huck Yang, Yile Gu, Yi-Chieh Liu, Shalini 855
+Ghosh, Ivan Bulyko, and Andreas Stolcke. 2023. 856
+Generative speech recognition error correction with 857
+large language models and task-activating prompt- 858
+ing. In 2023 IEEE Automatic Speech Recognition 859
+and Understanding Workshop (ASRU), pages 1–8. 860
+Xiuwen Zheng, Sixun Dong, Bornali Phukon, Mark 861
+Hasegawa-Johnson, and Chang D Yoo. 2026. To- 862
+wards robust dysarthric speech recognition: Llm- 863
+agent post-asr correction beyond wer. arXiv preprint 864
+arXiv:2601.21347. Last Accessed Date : May 25 th, 865
+2026. 866
+A Appendix 867
+In the Appendix, we provide: 868
+1. Section B: Related Work 869
+2. Section C: Dataset Used 870
+(a) Section C.1: Data Preprocessing and Val- 871
+idation 872
+3. Section D: Example of English Dysarthric 873
+ASR 874
+4. Section E: Neural ASR Architectures 875
+(a) Section E.1: State-of-the-art Neural ASR 876
+Comparison 877
+5. Section F: HMM-Based Correction 878
+11
+
+---PAGE 12---
+6. Section G: Prompt: Post-ASR Corrections879
+using LLMs880
+7. Section H: Evaluation and Benchmarking881
+(a) Section H.1: Quantitative Results882
+(b) Section H.2: Modelling ASR Edit Oper-883
+ations at Token and Context Levels884
+B Related Work885
+Dysarthric ASR: This problem remains challeng-886
+ing due to atypical articulation, reduced intelligi-887
+bility, abnormal speaking rate, and large speaker-888
+dependent acoustic variability. Early dysarthric889
+speech resources, such as UA-Speech and TORGO890
+have enabled systematic evaluation of ASR systems891
+for impaired speech, however, they also reveal that892
+DASR errors are often more irregular than those ob-893
+served in typical raw-ASR hypotheses (Kim et al.,894
+2008; Rudzicz et al., 2012). Current ASR systems895
+based on self-supervised speech representations,896
+Conformer architectures, and FastConformer-style897
+models have improved acoustic modeling capacity;898
+however, these models can still produce phoneti-899
+cally plausible, but semantically incorrect hypothe-900
+ses when articulation is severely distorted (Gulati901
+et al., 2020; Rekesh et al., 2023; Aboeitta et al.,902
+2025). Thus, a strong ASR backbone alone is insuf-903
+ficient for dysarthric speech, motivating correction904
+methods that operate after decoding.905
+Post-ASR correction has recently emerged as a906
+practical alternative to modifying the recognizer907
+itself. Instead of retraining the acoustic model,908
+post-ASR correction treats the decoded hypothesis909
+as the raw ASR hypothesis and applies a second-910
+stage correction model. LLM-based post-ASR911
+correction has been studied using 1-best hypothe-912
+ses, N-best hypotheses, and prompt optimization913
+(Li et al., 2024; Sachdev et al., 2025). These ap-914
+proaches are effective when ASR errors can be915
+handled as a general text-recovery problem. DASR916
+is harder to treat in this way because the errors917
+are tied to impaired and speaker-specific articu-918
+lation (Caballero Morales and Cox, 2009; Rowe919
+et al., 2022). In practice, the decoded sentence is920
+often only partly wrong. Most of the words may921
+already be correct, while a few errors come from922
+phonetic distortion in the speaker’s articulation. If923
+the entire hypothesis is rewritten by an LLM, it may924
+improve the mistaken part but also disturb correct925
+parts of the sentence (Ma et al., 2025; Hernandez926
+et al., 2026). Thus, we use selective correction:927
+reliable spans are kept unchanged, and the LLM928
+is used only when the hypothesis shows signs of 929
+uncertainty. The model may fix the actual error, 930
+but it may also modify correct words while try- 931
+ing to improve the sentence fluency (Leng et al., 932
+2023). In such cases, passing the full sentence to 933
+an LLM can be risky, as the model may unneces- 934
+sarily rewrite correct parts of the hypothesis while 935
+trying to improve fluency (Hernandez et al., 2026; 936
+Tang et al., 2026). Although the model can cor- 937
+rect a wrong substitution, it may also rewrite words 938
+that were already correct in order to make the sen- 939
+tence sound more fluent. To avoid this, we use the 940
+HMM output as an initial check to decide whether 941
+the ASR hypothesis actually requires correction. 942
+The LLM is then applied only in a controlled man- 943
+ner, rather than being allowed to rewrite the full 944
+sentence freely. 945
+Recent work has begun to address post-ASR 946
+correction specifically for disordered or dysarthric 947
+speech. Wen et al. (2026) study LLM-based post- 948
+ASR error correction for disordered speech, show- 949
+ing the relevance of LLMs as transcript-level cor- 950
+rection modules. Zheng et al. (2026) propose an 951
+LLM-agent method for dysarthric post-ASR correc- 952
+tion and point out that WER does not always reflect 953
+whether the sentence meaning is preserved. Their 954
+Judge–Editor framework uses top-k ASR hypothe- 955
+ses to keep reliable parts of the output and edit only 956
+uncertain regions. Our work takes a more practi- 957
+cal setting, where only the 1-best ASR hypothesis 958
+is available. In contrast, our work focuses on a 959
+simpler and more applicable 1-best correction set- 960
+ting. We first apply an HMM-based noisy-channel 961
+corrector to model word-level ASR confusions in 962
+dysarthric speech, and then refine the intermediate 963
+hypothesis using LoRA-adapted LLMs. 964
+Low-Rank Adaptation (LoRA): Large language 965
+models are useful for post-ASR correction because 966
+they can look beyond individual words and use the 967
+surrounding sentence to choose a more likely cor- 968
+rection (Ma et al., 2025; Leng et al., 2023). Still, 969
+updating all parameters of an LLM is expensive, 970
+and for this task it is usually not required. The 971
+model already has general language knowledge, the 972
+correction model is trained to capture systematic 973
+patterns between raw-ASR hypotheses and the cor- 974
+responding intended reference transcripts. LoRA 975
+provides a practical way to do this by keeping the 976
+original model fixed and training only small low- 977
+rank updates, which reduces memory use while 978
+retaining the pretrained model’s linguistic ability 979
+12
+
+---PAGE 13---
+(Hu et al., 2022).980
+LoRA is particularly suitable for DASR as the981
+errors are often repeated across speakers or sever-982
+ity levels, but the amount of training data is lim-983
+ited (Mengistu and Rudzicz, 2011). A correc-984
+tion model should learn recurring mappings from985
+raw ASR transcripts to reference transcripts with-986
+out overfitting the impaired-speech corpus (Ca-987
+ballero Morales and Cox, 2009; Rowe et al., 2022).988
+Parameter-efficient tuning is therefore a suitable989
+choice for adapting LLMs to this setting (Hu et al.,990
+2022). Low-resource ASR correction work also991
+suggests that using a larger model does not auto-992
+matically lead to better correction. For Hindi ASR993
+correction, Kumar et al. (2026); Yang et al. (2023);994
+Bhandari and Harit (2026) show that model size995
+alone is not a reliable indicator of performance.996
+This motivates our comparison of different model997
+families within the same correction framework,998
+rather than assuming that one large LLM will be999
+sufficient.1000
+In this work, we use LoRA to adapt several1001
+correction backbones, including instruction-tuned1002
+causal LLMs and byte-level sequence-to-sequence1003
+models. This comparison is useful because DASR1004
+errors do not occur at a single linguistic level.1005
+Some errors need sentence-level context, while1006
+others are closer to spelling, phonetic, or partial-1007
+word distortions. Causal LLMs such as LLAMA -1008
+3.2 and QWEN 2.5-I NSTRUCT are better suited1009
+to context-aware rewriting, whereas ByT5-style1010
+byte-level modeling is more directly suited to raw-1011
+ASR hypothesis correction and spelling-level cor-1012
+rection (Xue et al., 2022; Touvron et al.; Hui et al.).1013
+With the same HMM -guided pipeline, we com-1014
+pare whether the gains mainly come from sentence1015
+context, byte-level robustness, or statistical-neural1016
+correction.1017
+Notation: Let D = ( xi, yi)N
+i=1 denote the post-1018
+ASR correction training set, where xi is the in-1019
+put transcript, either a raw-ASR hypothesis or1020
+an HMM -corrected output, and yi is the corre-1021
+sponding reference transcript. Algorithm 1 sum-1022
+marizes the LoRA fine-tuning procedure. Let1023
+fθ be a pretrained LLM with frozen parameters1024
+θ. LoRA introduces trainable adapter parameters1025
+ϕ = {AW , BW }W ∈M for each target projection1026
+matrix W in the module set M. Here, r is the1027
+LoRA rank, α is the LoRA scaling factor, and1028
+λ = α/r is the effective LoRA scale. The adapted1029
+weight is computed as W ′ = W + λBW AW . In1030
+Algorithm 1 LoRA Fine-Tuning for LLM-Based
+Post-ASR Correction
+Require: D = {(xi, yi)}N
+i=1, pre-trained LLM fθ,
+rank r = 8, α ∈ {4, 8, 12, 16, 17}, target mod-
+ules M
+Ensure: Trained LoRA parameters ϕ∗
+1: Load fθ and freeze θ
+2: λ ← α/r
+3: for W ∈ M do
+4: Initialize A ∈ Rr×din, B ∈ Rdout×r
+5: W ′ ← W + λBA
+6: end for
+7: ϕ ← {A, B}
+8: for epoch = 1, . . . , E do
+9: for B ⊂ D do
+10: ˆyi ← fθ,ϕ(xi), ∀(xi, yi) ∈ B
+11: LB ←
+− 1
+|B|
+X
+(xi,yi)∈B
+|yi|X
+t=1
+log Pθ,ϕ(yi,t | yi,<t, xi)
+12: ϕ ← ϕ − η∇ϕLB
+13: end for
+14: end for
+15: ϕ∗ ← arg minϕ Lval
+16: return ϕ∗
+our experiments, r = 8 and α ∈ {4, 8, 12, 16, 17}. 1031
+Confidence-Gated Hybrid Correction: LLM- 1032
+based Post-ASR correction can cause overcorrec- 1033
+tion by rewriting words which are already correct. 1034
+This is particularly risky for dysarthric speech, 1035
+where an ASR hypothesis may contain severe pho- 1036
+netic errors alongside reliable spans. Confidence- 1037
+aware methods address the problem by using un- 1038
+certainty to guide correction use word-level con- 1039
+fidence for disordered speech correction, while 1040
+Zheng et al. (2026); Hernandez et al. (2026) use an 1041
+LLM agent to preserve confident regions and edit 1042
+uncertain ones. 1043
+Our work follows the same selective-correction 1044
+idea, but derives reliability from an HMM -based 1045
+correction model rather than solely from ASR confi- 1046
+dence scores or top-k hypotheses. The HMM mod- 1047
+els word-level raw-ASR-hypothesis-to-reference- 1048
+transcript mappings from the training data and 1049
+generates an intermediate corrected hypothesis. 1050
+We then estimate correction reliability using emis- 1051
+sion likelihood, correction frequency, ASR-HMM 1052
+agreement, and edit distance. In this framework, 1053
+the HMM serves not only as a first-pass corrector 1054
+but also as a confidence guide that helps determine 1055
+13
+
+---PAGE 14---
+whether the LLM should revise or preserve parts1056
+of the ASR hypothesis. Therefore, it act as both a1057
+conservative first-pass corrector and a confidence1058
+source for LLM refinement. This design utilizes1059
+the complementary strengths of HMM and LLMs.1060
+HMM S are interpretable and effective for frequent1061
+word-level confusions, while LLMs handle broader1062
+contextual errors. Since either module can fail,1063
+we study confidence-gated correction and hybrid1064
+HMM-LLM selection, using the HMM to control1065
+when LoRA-adapted LLM correction should be1066
+applied.1067
+LLMs for Post-ASR Correction: LLMs have re-1068
+cently been adopted for post-ASR correction be-1069
+cause they can model long-range linguistic depen-1070
+dencies and recover contextually plausible words1071
+from raw-ASR hypotheses. In this work, we exam-1072
+ine QWEN 2.5-I NSTRUCT , LLAMA -3.2 , and BYT51073
+as correction models for DASR outputs. While1074
+HMM S capture local word-level confusion pat-1075
+terns, LLMs provide sentence-level contextual re-1076
+finement. However, full-sentence LLM correction1077
+may introduce over-correction; therefore, this study1078
+uses confidence-gated and hybrid strategies to pre-1079
+serve reliable ASR outputs while correcting uncer-1080
+tain spans.1081
+Baselines1082
+1. Baseline 1 (Zheng et al., 2026): In this1083
+work, proposed a post-ASR correction frame-1084
+work based on a Judge–Editor large language1085
+model agent to improve the semantic fidelity1086
+of dysarthric speech recognition. Instead1087
+of modifying the acoustic model, their ap-1088
+proach utilizes multiple ASR hypotheses and1089
+selectively preserves, rewrites, or fuses un-1090
+certain segments to generate more accurate1091
+transcriptions. They also introduced the SAP-1092
+Hypo5 benchmark and evaluated the frame-1093
+work using both conventional ASR metrics1094
+and semantic evaluation measures, includ-1095
+ing MENLI, BERTScore, and downstream1096
+spoken language understanding metrics. Ex-1097
+perimental results showed that the proposed1098
+LLM-agent consistently improved transcrip-1099
+tion quality and semantic preservation while1100
+demonstrating the limitations of relying solely1101
+on word error rate for evaluation.1102
+2. Baseline 2 (Aboeitta et al., 2025): This work1103
+presented a comprehensive benchmark of self-1104
+supervised ASR models for dysarthric speech1105
+recognition by evaluating Wav2Vec 2.0, Hu- 1106
+BERT, and Whisper with different decod- 1107
+ing strategies. Beyond conventional CTC 1108
+and end-to-end decoding, they incorporated 1109
+large language models (BART, GPT-2, and Vi- 1110
+cuna) to improve transcription quality through 1111
+linguistic reasoning. Their experiments on 1112
+the TORGO and UASpeech datasets demon- 1113
+strated that LLM-assisted decoding signif- 1114
+icantly reduced word error rates, with the 1115
+Whisper–Vicuna framework achieving the 1116
+best overall performance. The study also ana- 1117
+lyzed cross-dataset generalization and recog- 1118
+nition performance across different dysarthria 1119
+severity levels, highlighting the importance 1120
+of contextual language modeling for robust 1121
+DASR. Therefore, we adopt the Whisper– 1122
+Vicuna framework as our baseline, as it 1123
+achieved the best recognition performance 1124
+among all the evaluated models. “‘ 1125
+C Dataset Used 1126
+We utilised three datasets to evaluate the pro- 1127
+posed method: UA-Speech (Kim et al., 2008) and 1128
+TORGO (Rudzicz et al., 2012) for in-domain evalu- 1129
+ation, and the In-house English Dysarthric Corpus 1130
+for out-of-domain evaluation. 1131
+TORGO (Rudzicz et al., 2012) dataset includes 1132
+14 speakers: 7 with dysarthria (3 females, 4 males 1133
+with cerebral palsy or amyotrophic lateral sclerosis) 1134
+and 7 control speakers (3 females, 4 males). The 1135
+data recorded was at 16 kHz in both quiet and noisy 1136
+environments. Each speaker provides 62 matched 1137
+phonetic utterances, resulting in an average of 201 1138
+seconds total (with 60 seconds of speech after voice 1139
+activity detection). This dataset is used to generate 1140
+hypotheses and to create training and validation 1141
+splits for developing pronunciation dictionaries for 1142
+difficult dysarthric words. 1143
+UA-Speech (Kim et al., 2008) consists of 28 1144
+speakers, including 15 with cerebral palsy (CP) 1145
+dysarthria-4 females and 11 males-and 13 con- 1146
+trol speakers-4 females and 9 males. Data was 1147
+recorded using a 7-microphone array at a sampling 1148
+rate of 16 kHz, specifically utilizing the5th channel. 1149
+Each speaker contributed 721 utterances, result- 1150
+ing in an average total duration of 1,887 seconds, 1151
+which includes 564 seconds of speech and 1,323 1152
+seconds of non-speech following voice activity de- 1153
+tection (V AD). Additionally, this dataset includes 1154
+a held-out test set that provides severity ratings 1155
+14
+
+---PAGE 15---
+for WERand CER evaluation after LLM-guided1156
+phoneme remapping.1157
+In-house Dysarthric English Corpus is an inter-1158
+nally collected speech dataset developed to build1159
+assistive speech technology for individuals with1160
+dysarthria. It contains recordings from various1161
+dysarthric subjects to capture speech variability1162
+across different dysarthric speech patterns. The cor-1163
+pus contains four severity levels (e.g., low, medium,1164
+high, and very high), enabling severity-aware anal-1165
+ysis. We used this dataset for out-of-distribution1166
+zero-shot evaluation.1167
+C.1 Data Pre-processing and Validation1168
+The dataset was divided using a stratified sampling1169
+to preserve both the distribution of the sample-type,1170
+token and context-level and penalty-label (As de-1171
+tailed in Table 1 The train/test/validation subsets in1172
+a ratio of 70%/ 20%/10%, corresponding to 11,2351173
+training samples, 3,210 test samples, and 1,6051174
+validation samples, respectively, as shown in Ta-1175
+ble 8. During experimentation, the training and1176
+validation sets were used for model learning and1177
+hyperparameter tuning, respectively. The test set is1178
+kept reserved for the final evaluation.1179
+Split Ratio Samples Balanced Factors
+Train 70% 11,235 Split ratio; correction level
+(token/context); ASR model
+(Wav2Vec2/FastConformer)
+Test 20% 3,210
+Validation 10% 1,605
+Table 8: In-domain dataset examples are stratified by
+correction level, penalty labels (0, 0.5, 1) and ASR
+source model in order to maintain the balanced distribu-
+tion across splits.
+Transcript Verification: As part of the dataset1180
+quality assurance, two L2 (second-language) En-1181
+glish speakers manually reviewed the WA V files1182
+and corresponding transcripts. The review focused1183
+on identifying and correcting unrelated, inconsis-1184
+tent, or mismatched audio transcript pairs, and took1185
+approximately 12 days before model training and1186
+evaluation.1187
+D Example of English DASR1188
+To further examine where ASR errors arise, we1189
+visualize the utterance with Montreal Forced1190
+Aligne-derived word boundaries and acoustic cues.1191
+This analysis helps relate substitution and dele-1192
+tion,Insertion errors to local waveform and en-1193
+ergy patterns. Figure 4 visualizes the utterance-1194
+level acoustic alignment produced by the analysis1195
+pipeline. The code first normalizes the transcript, 1196
+constructs an MFA-compatible corpus, and applies 1197
+Montreal Forced Aligner (MFA) to obtain word- 1198
+level timestamps from the TextGrid output. These 1199
+timestamps are then overlaid on the normalized 1200
+speech waveform together with the Root Mean 1201
+Square energy envelope, allowing the temporal 1202
+location of each reference word, silence region, 1203
+and low-energy segment to be inspected. The plot 1204
+shows that recognition errors,such as the substi- 1205
+tution plays → play and the deletion of little oc- 1206
+cur around short or acoustically weak regions. In 1207
+dysarthric speech, reduced articulatory precision, 1208
+shortened word realization, and low-energy seg- 1209
+ments can make word boundaries and phonetic cues 1210
+less distinct. As a result, the ASR system may con- 1211
+fuse inflectional morphology, as in plays/play, or 1212
+omit low-salience words, as in the deletion of lit- 1213
+tle. Thus, the MFA alignment and acoustic feature 1214
+visualization provide evidence for where and why 1215
+the ASR hypothesis diverges from the ground-truth 1216
+transcript. 1217
+E Neural ASR Architectures 1218
+FastConformer (Rekesh et al., 2023): FastCon- 1219
+former is an improved neural ASR architecture 1220
+that extends the Conformer model to improve the 1221
+efficiency and scalability of ASR. It adopts 8 × 1222
+downsampling strategy and depthwise separable 1223
+convolutions to reduce the computation cost and 1224
+accelerate the inference speed. The architecture 1225
+also replaces global attention with limited-context 1226
+attention to enable efficient long-form speech tran- 1227
+scription. The experimental results indicate that 1228
+Fast Conformer achieves a competitive Word Er- 1229
+ror Rate (WER) with a significant speed advantage 1230
+over the original Conformer model. 1231
+Wav2Vac2.0(Baevski et al., 2020): Wav2vec 2.0 is 1232
+a neural ASR architecture for self-supervised learn- 1233
+ing of speech representations from raw audio with 1234
+CNN and Transformer networks. It utilizes masked 1235
+speech representations and contrastive learning 1236
+to enhance speech recognition performance with 1237
+fewer labeled data. The model achieves state-of- 1238
+the-art ASR accuracy on benchmark datasets such 1239
+as LibriSpeech. 1240
+E.1 State-of-the-art Neural ASR Comparison 1241
+With recent advances in neuralASR, improve- 1242
+ments in transcription accuracy have been accom- 1243
+plished due to self-supervised and end-to-end mod- 1244
+15
+
+---PAGE 16---
+0 2 4 6 8
+3.0
+2.5
+2.0
+1.5
+1.0
+0.5
+0.0
+0.5
+1.0
+Time (s)
+Amplitude
+Ground truth:
+ASR hypothesis:
+twice
+each
+day
+he
+plays skillfully
+and
+with
+zest upon our
+little
+organ
+twice
+each
+day
+he
+play skillfully
+and
+with
+zest upon our
+ organ
+substitution: plays -> play
+deletion: little missing
+Green = ground truth | Blue = correct hypothesis | Red = ASR error
+Full hypothesis: twice each day he play skillfully and with zest upon our organ
+Waveform
+RMS energy
+MFCC summary
+Figure 4: Waveform plot of the TORGO Female 03 head-mounted microphone recording, aligned with Montreal
+Forced Aligner (MFA), showing waveform, RMS energy, and MFCC summary with ASR errors. The plot shows a
+substitution (plays → play) and a deletion (little missing), likely caused by weak/short acoustic evidence, reduced
+energy, or unclear spectral cues that make those words harder for ASR System to recognize. Analysis: MFA
+provides the ground-truth word timing, while the ASR hypothesis is compared word-by-word; errors occur where
+the waveform/energy/MFCC patterns are less distinct or where pronunciation is shortened, causing the recognizer
+to confuse morphology (plays/play) or skip a low-salience word (little).
+els. Wav2vec 2.0, Whisper, Conformer, and Fast-1245
+Conformer are among the architectures that learn1246
+powerful acoustic and linguistic representations1247
+from large amounts of speech and reach state-1248
+of-the-art performances. wav2vec 2.0 relies on1249
+self-supervised learning along with Transformer1250
+encoders and enhances recognition performance1251
+using small amounts of labeled data, Whisper1252
+trains a model with large amounts of weakly su-1253
+pervised data in order to enable multilingual and1254
+noise-robust speech recognition, Conformer bene-1255
+fits from both convolutional neural networks and1256
+Transformer attention to simultaneously consider1257
+local and global contexts in the speech, and Fast-1258
+Conformer benefits from the architecture of Con-1259
+former and adopts an aggressive downsampling and1260
+efficient attention mechanism in order to enhance1261
+computational efficiency while reaching compet-1262
+itive recognition performance. However, since1263
+dysarthric speech is difficult for recognition due1264
+to atypical pronunciations and articulations, which1265
+create difficulties in substitution, deletion, and1266
+context-dependent recognitions, this study evalu-1267
+ates how HMM-LLM can help improve the perfor-1268
+mance of ASR models in recognition of dysarthric1269
+speech.1270
+F HMM-Based Correction 1271
+The HMM is proposed as a dysarthric-speech- 1272
+specific post-processing step for the ASR model, 1273
+prior to processing by the QWEN 2.5-I NSTRUCT 1274
+LLM. The HMM is capable of mapping ASR and 1275
+reference transcripts to derive the word mapping 1276
+information from raw ASR hypothesis to reference 1277
+transcript words. This ability makesHMM suitable 1278
+for the correction of substitution, deletion, and pro- 1279
+nunciation errors, which are frequent in dysarthric 1280
+speech. HMM carries out first-pass lexical correc- 1281
+tion utilizing transitions and emission probability 1282
+while at the same time, producing HMM -based 1283
+confidence scores by virtue of ASR-HMM agree- 1284
+ment and corrections probability. These scores are 1285
+subsequently used in the confidence-gating step to 1286
+either preserve or further correct the ASR output 1287
+using the LLM. 1288
+G Prompt: Post-ASR Corrections using 1289
+LLMs 1290
+Instruction: You are given an ASR sentence
+produced from dysarthric speech, together with
+an HMM candidate sentence. Produce the best
+possible corrected English transcript using the
+HMM candidate and linguistic context. Pre-
+serve the intended meaning of the speaker and
+fix only ASR-related errors. Rely on gram- 1291
+16
+
+---PAGE 17---
+mar, sentence context, and typical English us-
+age when choosing the corrected form. For re-
+porting purposes, the ground-truth sentence is
+shown as the same transcript as the corrected
+sentence in the examples.
+Pay special attention to common English ASR
+errors, including spelling errors, phonetic mis-
+matches, grammatical errors, plural mismatches,
+word IDS, abbreviation variation, numerical
+variation, and compound-word splitting.
+Examples:
+Spelling error:
+ASR sentence: She drank cofee in the morning
+Corrected sentence: She drank coffee in the
+morning
+Ground Truth sentence: She drank coffee in the
+morning
+Phonetic mismatch:
+ASR sentence: He went to the libary
+Corrected sentence: He went to the library
+Ground Truth sentence: He went to the library
+Grammatical error:
+ASR sentence: The boy walk to school
+Corrected sentence: The boy walks to school
+Ground Truth sentence: The boy walks to
+school
+Incorrect word substitution:
+ASR sentence: Put the book on the cable
+Corrected sentence: Put the book on the table
+Ground Truth sentence: Put the book on the
+table
+Word omission:
+ASR sentence: The girl drinking water
+Corrected sentence: The girl is drinking water
+Ground Truth sentence: The girl is drinking
+water
+Numerical phrase variation:
+ASR sentence: I have twenty five books
+Corrected sentence: I have 25 books
+Ground Truth sentence: I have 25 books
+Input:
+ASR sentence: the speaker intended bajuere
+HMM candidate sentence: the speaker intended
+berserker
+Output:
+Corrected sentence: the speaker intended
+berserker1292
+Ground Truth sentence: the speaker intended
+berserker 1293
+H Evaluation and Benchmarking 1294
+The system was evaluated using WER across 1295
+three correction stages: the raw ASR output, the 1296
+HMM -corrected output, and the final QWEN 2.5- 1297
+INSTRUCT corrected output. This stepwise evalu- 1298
+ation was designed to quantify the contribution of 1299
+each component in the proposed pipeline. The raw- 1300
+ASR output was used as the baseline, the HMM 1301
+output represented noisy-channel correction, and 1302
+the QWEN 2.5-I NSTRUCT output represented LLM- 1303
+based contextual refinement. 1304
+This staged benchmarking setup provides a con- 1305
+sistent evaluation protocol for comparing intermedi- 1306
+ate and final outputs within the proposed dysarthric 1307
+ASR correction framework. 1308
+H.1 Quantitative Results 1309
+We evaluate the ASR and post-correction outputs 1310
+using WER, CER, and MER. These metrics quan- 1311
+tify the discrepancy between the reference tran- 1312
+scription and the predicted transcription, which is 1313
+particularly important for DASR because atypical 1314
+articulation patterns often lead to IDS. 1315
+WER (Jurafsky and Martin, 2026): It measures 1316
+the word-level difference between the reference 1317
+transcription and the ASR hypothesis. It is defined 1318
+as: 1319
+WER = Sw + Dw + Iw
+Nw
+, 1320
+where Iw, Dw, and Sw, and the number of word- 1321
+level IDS, respectively, and Nw is the total num- 1322
+ber of words in the reference transcription. In 1323
+DSR, WER captures how frequently words are in- 1324
+correctly recognized due to impaired or atypical 1325
+speech production. 1326
+CER (SpeechBrain, 2024): Character error rate 1327
+evaluates recognition errors at the character level. 1328
+It is computed as: 1329
+CER = Sc + Dc + Ic
+Nc
+, 1330
+whereIc, Dc, and Sc, represent character-level IDS, 1331
+respectively, and Nc is the total number of charac- 1332
+ters in the reference transcription. CER is useful for 1333
+dysarthric speech because it captures fine-grained 1334
+errors within words, including partial distortions 1335
+17
+
+---PAGE 18---
+that may not be fully reflected by word-level evalu-1336
+ation.1337
+MER (Morris et al., 2004): It measures the pro-1338
+portion of alignment errors among all matched and1339
+mismatched word units. It is defined as:1340
+MER = Sw + Dw + Iw
+Hw + Sw + Dw + Iw
+,1341
+where Hw denotes the number of correctly matched1342
+words, and Iw, Dw, and Sw, denote word-level1343
+IDS, respectively. MER provides a complementary1344
+measure to WER by normalizing errors w.r.t the1345
+total number of aligned correct and incorrect word1346
+units.1347
+H.2 Modelling ASR Edit Operations at Token1348
+and Context Levels1349
+Task-level correctness: Let, the ASR hypothesis1350
+be1351
+x = (x1, . . . , xM), (28)1352
+and the corresponding reference transcript be1353
+y = (y1, . . . , yN). (29)1354
+The two sequences are aligned using word-level1355
+minimum-edit-distance alignment. The alignment1356
+supports four operations:1357
+Match: (xi, yj), x i = yj,
+Substitution: (xi, yj), x i ̸= yj,
+Deletion: (ϵ, yj),
+Insertion: (xi, ϵ),
+(30)1358
+where ϵ denotes a null token. An insertion rep-1359
+resents an additional word generated by the ASR1360
+system.1361
+Token-level correctness: At the token level, each1362
+aligned pair is treated as an ASR-to-reference con-1363
+fusion event. The HMM hidden state represents1364
+the intended reference token, while the observa-1365
+tion represents the corresponding ASR token. A1366
+substitution contributes to the emission count;1367
+CE(yj, xi). (31)1368
+A deletion occurs when an intended reference token1369
+is absent from the ASR output and contributes to,1370
+CE(yj, ϵ). (32)1371
+An insertion occurs when the ASR system produces1372
+an additional token and contributes to,1373
+CE(ϵ, xi). (33)1374
+A correctly recognized token contributes to, 1375
+CE(yj, yj). (34) 1376
+The emission probability is estimated using addi- 1377
+tive smoothing: 1378
+CE(v, o) + αX
+o′∈Vobs
+CE(v, o′) + α|Vobs|
+, (35) 1379
+where α is the smoothing constant. Tokens unseen 1380
+in the training vocabulary are mapped to ⟨UNK⟩. 1381
+During decoding, the HMM estimates the most 1382
+likely intended-token sequence: 1383
+arg max
+z
+P (z | x). (36) 1384
+Any predicted ϵ states are removed before con- 1385
+structing the final corrected transcript. 1386
+Context-level modelling: At the context level, 1387
+consecutive token-level errors are merged into ed- 1388
+itable spans. A span may contain one or more IDS. 1389
+Only low-confidence spans are passed to the con- 1390
+textual correction module, while high-confidence 1391
+tokens remain protected. For example, consider the 1392
+ASR and reference sequences: 1393
+(the, boy, walk, school), (37) 1394
+(the, boy, walks, to, school). (38) 1395
+Their alignment is 1396
+(the, the), (boy, boy),
+(walk, walks), (ϵ, to), (school, school). (39) 1397
+Here, walk → walks is a substitution, while ϵ → 1398
+to represents a deletion from the ASR hypothesis. 1399
+Because these errors occur consecutively, they are 1400
+treated as a single uncertain context span. The 1401
+contextual correction module may replace, remove, 1402
+or introduce tokens only within the uncertain span. 1403
+The corrected span is subsequently combined with 1404
+the protected high-confidence tokens to form the 1405
+complete corrected sentence. 1406
+For both token-level and context-level predic- 1407
+tions, the numbers of substitutions S, deletions D, 1408
+and insertions I are calculated through minimum- 1409
+edit-distance alignment with the reference tran- 1410
+script. The WER for utterance i is 1411
+Si + Di + Ii
+Ni
+× 100, (40) 1412
+18
+
+---PAGE 19---
+where Ni is the number of words in the reference1413
+utterance. The final corpus-level WER is computed1414
+as,1415
+UX
+i=1
+(Si + Di + Ii)
+UX
+i=1
+Ni
+× 100, (41)1416
+where U is the number of unique test utterances.1417
+Therefore, the final WER is calculated from one1418
+complete corrected sentence per utterance and is1419
+not obtained by averaging token-level and context-1420
+level WER percentages.1421
+Utterance Exact Match (UEM) (Levit et al.,1422
+2012): It evaluates whether the complete predicted1423
+transcription exactly matches the reference tran-1424
+scription after normalization. Following sentence-1425
+level ASR evaluation, an utterance is counted as1426
+correct only when the reference and hypothesis1427
+transcriptions are identical, and incorrect otherwise.1428
+Unlike WER, CER, and MER, which allow partial1429
+credit through IDS, UEM requires the entire pre-1430
+dicted sequence to match the reference sequence.1431
+It is defined as:1432
+UEM = Hu
+Nu
+,1433
+where Hu denotes the number of utterances for1434
+which the predicted transcription exactly matches1435
+the reference transcription, and Nu is the total1436
+number of utterances. In DASR, UEM provides1437
+a stricter evaluation criterion because even a sin-1438
+gle word-level or character-level error causes the1439
+utterance to be counted as incorrect.1440
+Model Configurations1441
+Our correction pipeline combines three comple-1442
+mentary components: two heterogeneous ASR1443
+architectures generate initial transcriptions from1444
+dysarthric speech, an HMM-based acoustic model1445
+supplies phoneme- and word-level alignments as1446
+temporal and pronunciation cues, and three LLM-1447
+based post-ASR correction models refine the ASR1448
+output semantically and lexically to produce the fi-1449
+nal transcription. The following subsections detail1450
+each component’s configuration.1451
+ASR Configurations1452
+We generate initial transcriptions using two CTC-1453
+based ASR backbones with architecturally dis-1454
+tinct encoders: a Conformer-CTC model with a1455
+BPE subword output space, and a Wav2Vec 2.0 1456
+Transformer with a character-level output space. 1457
+Both are fine-tuned independently on the TORGO 1458
+and UASpeech training partitions and selected by 1459
+lowest validation WER, so that the downstream 1460
+Whisper–Vicuna correction stage is evaluated on 1461
+error profiles from two structurally different acous- 1462
+tic models rather than two checkpoints of the same 1463
+architecture. 1464
+Fast Conformer (CTC-BPE): 1465
+We initialize from the NeMo 1466
+stt_en_fastconformer_ctc_large check- 1467
+point (EncDecCTCModelBPE) and fine-tune with a 1468
+two-phase schedule rather than a single continuous 1469
+fine-tune. In Phase 1, the Conformer encoder 1470
+is frozen ( encoder.freeze()) and only the 1471
+CTC decoder head is adapted for 1 epoch at 1472
+lr = 5 × 10−4; this serves as a decoder-warmup 1473
+step so that the randomly-initialized (or domain- 1474
+mismatched) output projection does not inject 1475
+large gradients into the pretrained encoder once it 1476
+is unfrozen. In Phase 2, the encoder is unfrozen 1477
+and the full network is fine-tuned end-to-end 1478
+for 4 epochs at a lower rate, lr = 1 × 10−4, to 1479
+limit catastrophic forgetting of the pretrained 1480
+acoustic representations. Both phases use AdamW 1481
+with weight decay 1 × 10−3, a 500-step linear 1482
+warmup, and a minimum LR floor of 1 × 10−6; 1483
+training uses 16-mixed precision with gradient 1484
+accumulation of 2 (effective batch size 64 from a 1485
+per-step batch of 32). Checkpoint selection in both 1486
+phases is driven by val_wer (ModelCheckpoint, 1487
+save_top_k=1), and we additionally run a custom 1488
+decode-and-score pass at the end of every epoch 1489
+(independent of NeMo’s built-in validation metric) 1490
+to compute WER, MER, CER, and exact-match 1491
+accuracy via Levenshtein alignment with explicit 1492
+IDS counts, since this is the pipeline used for final 1493
+reporting rather than the trainer’s internal metric. 1494
+Wav2Vec 2.0 (CTC-character): We 1495
+initialize the acoustic model from 1496
+facebook/wav2vec2-large-960h-lv60-self 1497
+and reuse the processor/vocabulary from 1498
+facebook/wav2vec2-base-960h, with text 1499
+targets normalized to lowercase alphabetic 1500
+characters plus apostrophe and mapped to the 1501
+model’s word-delimiter tokenization scheme. The 1502
+convolutional feature encoder is frozen throughout 1503
+fine-tuning ( freeze_feature_encoder); only 1504
+the Transformer encoder and CTC head are 1505
+updated. We set ctc_zero_infinity=True 1506
+19
+
+---PAGE 20---
+to zero out infinite/NaN losses that otherwise1507
+arise when a target sequence is longer than1508
+the downsampled acoustic sequence length,1509
+and use ctc_loss_reduction=mean. Opti-1510
+mization uses the Hugging Face Trainer with1511
+AdamW, lr = 3 × 10−5, 500-step warmup,1512
+weight decay 0.01, a per-device batch size of1513
+1 with gradient accumulation of 16 (effective1514
+batch size 16), and optional fp16. Model1515
+selection uses load_best_model_at_end1516
+with metric_for_best_model=wer1517
+(greater_is_better=False), evaluated ev-1518
+ery 500 steps.1519
+Objective and evaluation: Both models are op-1520
+timized with the standard CTC objective,1521
+LCTC = − log
+X
+π∈B−1(y)
+p(π | X), (42)1522
+where X is the acoustic input, y the target token se-1523
+quence (BPE subwords for Fast Conformer, charac-1524
+ters for Wav2Vec 2.0), andB−1(y) the set of frame-1525
+level alignments collapsing to y under the CTC1526
+decoding function B. For both systems, we report1527
+WER, MER, and CER using edit-distance-based1528
+counts of correct/IDS operations, together with1529
+exact-utterance-match accuracy, rather than relying1530
+on a single aggregate library metric. This gives1531
+a common, directly comparable scoring pipeline1532
+across the two heterogeneous architectures before1533
+hypotheses are passed to the LLM-based post-ASR1534
+correction stage.1535
+HMM Configurations1536
+The proposed Hidden Markov Model (HMM) is1537
+a statistical post-ASR correction module to refine1538
+the noisy hypotheses from the fine-tuned ASR sys-1539
+tem prior to the contextual refinement by the large1540
+language model (LLM). As opposed to traditional1541
+acoustic HMMs that rely on speech features, the1542
+proposed model relies directly on the textual ASR1543
+hypotheses and learns recurrent word-level con-1544
+fusion patterns from paired noisy and reference1545
+transcripts. Let the training corpus be:1546
+D =
+n
+(t(i)
+ASR, t(i)
+ref )
+oN
+i=1
+, (43)1547
+where tASR denotes the noisy ASR output and1548
+tref represents the corresponding ground-truth tran-1549
+script.1550
+Word Alignment:Each ASR hypothesis is aligned1551
+with its reference transcript using dynamic-1552
+programming-based minimum edit distance. Given 1553
+the noisy sequence; 1554
+X = (x1, x2, . . . , xT ) (44) 1555
+and the reference sequence, 1556
+Y = (y1, y2, . . . , yM), (45) 1557
+the edit-distance recursion is computed as 1558
+D(i, j) = min
+
+
+
+D(i − 1, j) + 1,
+D(i, j − 1) + 1,
+D(i − 1, j − 1) + c,
+(46) 1559
+1560
+where, c =
+(
+0, x i = yj,
+1, x i ̸= yj. (47) 1561
+The resulting alignment identifies IDS errors, 1562
+which are subsequently used for probability estima- 1563
+tion. 1564
+Emission Probability: The emission model cap- 1565
+tures the probability of observing a noisy ASR 1566
+token x given the intended clean token y: 1567
+P (x|y) = C(y, x) + 0.01P
+x C(y, x) + 0.01|V | , (48) 1568
+where C(y, x) denotes the confusion count and |V | 1569
+is the vocabulary size. Additive smoothing with 1570
+coefficient 0.01 was applied throughout all exper- 1571
+iments to avoid zero probabilities. Furthermore, 1572
+self-mappings were reinforced by adding three vir- 1573
+tual counts, 1574
+C(y, y) ← C(y, y) + 3, (49) 1575
+which encourages preserving already-correct ASR 1576
+predictions. 1577
+Bigram Language Model: Instead of an explicit 1578
+transition matrix, the proposed implementation esti- 1579
+mates a Laplace-smoothed bigram language model 1580
+over the clean transcripts: 1581
+P (yt|yt−1) = C(yt−1, yt) + 0.1
+C(yt−1) + 0.1|V | , (50) 1582
+where C(yt−1, yt) denotes the bigram frequency 1583
+and C(yt−1) represents the unigram frequency. 1584
+Candidate Generation: For every noisy ASR to- 1585
+ken, the HMM retrieves the top-K correction can- 1586
+didates learned from the confusion statistics, 1587
+K = 8, (51) 1588
+20
+
+---PAGE 21---
+while unseen words retain their original form.1589
+Beam Search Decoding: The corrected sequence1590
+is generated using beam-search decoding. The cu-1591
+mulative score for each candidate sequence is1592
+Score =
+TX
+t=1
+log P (yt|yt−1) + 2
+TX
+t=1
+log P (xt|yt),
+(52)1593
+where the emission probability is assigned twice1594
+the weight of the language-model probability to1595
+emphasize learned ASR confusion patterns. During1596
+decoding, only the best B=12, partial hypotheses1597
+are retained after each decoding step. The optimal1598
+corrected sequence is therefore1599
+Y ∗ = arg max
+Y
+Score(Y ). (53)1600
+The resulting corrected transcript, denoted as1601
+tHM M, is subsequently combined with the orig-1602
+inal ASR hypothesis to construct the prompt for1603
+the LoRA-adapted Qwen2.5-3B language model.1604
+Experimental Configuration Table 9 summarizes1605
+the HMM hyperparameters used in all experiments.1606
+Table 9: HMM configuration used in all experiments.
+Parameter Value
+Candidate corrections (K) 8
+Beam width (B) 12
+Emission smoothing 0.01
+Language-model smoothing 0.10
+Identity reinforcement +3 counts
+Language model Bigram
+Decoder Beam Search
+Training data ASR–Reference pairs
+Output tHM M
+1607
+LLM Configurations1608
+The second stage of the proposed DYSREFINE1609
+framework employs instruction-tuned Large Lan-1610
+guage Models (LLMs) to perform context-aware re-1611
+finement of the statistically corrected transcript gen-1612
+erated by the HMM. Three architectures were inves-1613
+tigated: QWEN 2.5-3B-I NSTRUCT , LLAMA -3.2-1614
+3B-I NSTRUCT , and BYT5- SMALL . The causal lan-1615
+guage models (Qwen and Llama) receive both the1616
+original ASR hypothesis and the HMM-corrected1617
+candidate, whereas the encoder–decoder model1618
+(ByT5) receives only the HMM output.1619
+Prompt Construction: For each utterance, the1620
+HMM generates an intermediate correction1621
+hi = HMM(dASR
+i ), (54) 1622
+where dASR
+i denotes the noisy ASR hypothesis and 1623
+hi is the HMM-corrected transcript. The corre- 1624
+sponding target transcript is 1625
+yi = dref
+i , (55) 1626
+where dref
+i denotes the ground-truth reference. 1627
+For the causal language models (Qwen and Llama), 1628
+the prompt is constructed as 1629
+pi = {Instruction, dASR
+i , hi}, (56) 1630
+where the instruction requests the model to correct 1631
+ASR errors while preserving the original semantic 1632
+content. 1633
+For ByT5, the source sequence is simply 1634
+si = "correct:" hi. (57) 1635
+Tokenization:Given the prompt pi, the tokenizer 1636
+produces 1637
+xi = Tokenizer(pi), (58) 1638
+while the target transcript is tokenized as 1639
+yi = Tokenizer(dref
+i ). (59) 1640
+For causal language models, the final training se- 1641
+quence is 1642
+zi = [xi; yi], (60) 1643
+where the prompt tokens are masked using 1644
+labels = [−100, . . . ,−100, y1, . . . , yT ], (61) 1645
+such that the optimization objective is computed 1646
+only over the target transcript. 1647
+Training Objective:For Qwen and Llama, autore- 1648
+gressive causal language modeling is optimized 1649
+using the cross-entropy loss 1650
+L = − 1
+N
+NX
+i=1
+TiX
+t=1
+log Pθ(yi,t|pi, yi,<t), (62) 1651
+where N is the number of training samples. 1652
+For ByT5, the encoder–decoder objective is 1653
+P (yi|si) =
+Y
+t
+P (yt|y<t, Encoder(si)), (63) 1654
+21
+
+---PAGE 22---
+with the corresponding sequence-to-sequence1655
+cross-entropy loss.1656
+LoRA Parameterization:Parameter-efficient fine-1657
+tuning is performed using Low-Rank Adaptation1658
+(LoRA). For a pretrained weight matrix1659
+W ∈ Rd×k, (64)1660
+the trainable low-rank update is1661
+∆W = α
+r BA, (65)1662
+where1663
+A ∈ Rr×k, B ∈ Rd×r. (66)1664
+The adapted weight matrix becomes1665
+W ′ = W + ∆W. (67)1666
+For all experiments,1667
+r = 8, α = 16, (68)1668
+yielding a scaling factor1669
+α
+r = 2. (69)1670
+LoRA adapters are inserted into the attention pro-1671
+jection layers. Specifically, Qwen and Llama1672
+employ the projection modules q_proj, k_proj,1673
+v_proj, and o_proj, whereas ByT5 applies LoRA1674
+to the encoder–decoder attention projections.1675
+Self-Attention:For an input representation X, the1676
+attention projections are computed as1677
+Q = XW Q, K = XW K, V = XW V .
+(70)1678
+The self-attention operation is1679
+Attention(Q, K, V ) = Softmax
+ QKT
+√dk
+
+V.
+(71)1680
+With LoRA, the projection matrices are updated as1681
+W ′
+Q = WQ + α
+r BQAQ, (72)1682
+and similarly for WK, WV , and WO.1683
+Optimization:The models are optimized using1684
+AdamW with learning rate1685
+η = 2 × 10−4. (73)1686
+Only the LoRA parameters are updated, while 1687
+all pretrained backbone parameters remain frozen. 1688
+Mixed-precision training (FP16) and gradient 1689
+checkpointing are enabled for Qwen and Llama 1690
+to reduce GPU memory consumption. 1691
+Inference:During inference, deterministic greedy 1692
+decoding is employed, 1693
+ˆy = arg maxP (y|p), (74) 1694
+with 1695
+num_beams = 1, do_sample = F alse.
+(75) 1696
+The maximum generation length is fixed to 48 to- 1697
+kens for Qwen and Llama, and 64 tokens for ByT5. 1698
+Table 10: LLM configuration used in all experiments.
+Parameter Qwen Llama ByT5
+Model Qwen2.5-3B Llama-3.2-3B ByT5-small
+Task Causal LM Causal LM Seq2Seq
+Batch Size 1 1 2
+Effective Batch Size 8 8 16
+Precision FP16 FP16 FP32
+Maximum Length 160 160 256/96
+22
