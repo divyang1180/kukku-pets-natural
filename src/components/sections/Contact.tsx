@@ -72,8 +72,8 @@ export default function Contact() {
     {
       icon: <Phone className="text-primary w-5 h-5" />,
       label: "Call Support",
-      value: "+91 81605 26176",
-      href: "tel:+918160526176",
+      value: "+91 95587 44805",
+      href: "tel:+919558744805",
     },
     {
       icon: <MapPin className="text-primary w-5 h-5" />,
@@ -87,7 +87,7 @@ export default function Contact() {
     <section className="py-16 md:py-20 lg:py-24 bg-background relative overflow-hidden scroll-mt-24" id="contact">
       {/* Floating WhatsApp chat widget */}
       <a
-        href="https://wa.me/918160526176"
+        href="https://wa.me/919558744805"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 hover:shadow-2xl transition-all duration-300"

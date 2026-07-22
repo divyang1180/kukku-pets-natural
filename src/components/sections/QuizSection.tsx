@@ -346,7 +346,7 @@ export default function QuizSection() {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center border-t border-gray-150 pt-6">
                 <a
-                  href={`https://wa.me/918160526176?text=${encodeURIComponent(recommendation.whatsappText)}`}
+                  href={`https://wa.me/919558744805?text=${encodeURIComponent(recommendation.whatsappText)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#013220] hover:bg-[#0b4f35] text-white text-sm font-extrabold uppercase tracking-wider transition-all shadow-md"

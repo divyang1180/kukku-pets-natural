@@ -133,7 +133,7 @@ export default function ProductRange() {
     const text = encodeURIComponent(
       `Hi! I would like to ${product.ctaType === "reserve" ? "reserve early access" : "be notified"} for "${product.title}". Please let me know when it launches!`
     );
-    return `https://wa.me/918160526176?text=${text}`;
+    return `https://wa.me/919558744805?text=${text}`;
   };
 
   return (

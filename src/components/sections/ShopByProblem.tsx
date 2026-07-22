@@ -146,7 +146,7 @@ export default function ShopByProblem() {
                 </p>
               </div>
               <a
-                href="https://wa.me/918160526176?text=Hi!+I+want+to+become+a+founding+member+of+Kukku+Pets+Natural."
+                href="https://wa.me/919558744805?text=Hi!+I+want+to+become+a+founding+member+of+Kukku+Pets+Natural."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#013220] hover:bg-[#0b4f35] text-white text-sm font-extrabold tracking-wide uppercase transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap shrink-0"

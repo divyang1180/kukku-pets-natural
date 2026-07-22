@@ -26,7 +26,7 @@ export default function CTABanner() {
             Contact Us 📬
           </a>
           <a
-            href="https://wa.me/918160526176"
+            href="https://wa.me/919558744805"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#25D366] hover:bg-[#1ebe57] text-white text-sm font-extrabold uppercase tracking-wider transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
